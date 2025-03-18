@@ -1,0 +1,60 @@
+ecommerce-backend/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── example/
+│   │   │           └── ecommerce/
+│   │   │               ├── EcommerceApplication.java  # Điểm khởi chạy ứng dụng
+│   │   │               ├── config/                   # Cấu hình ứng dụng
+│   │   │               │   ├── SecurityConfig.java   # Cấu hình bảo mật (JWT, Spring Security)
+│   │   │               │   ├── SwaggerConfig.java    # Cấu hình Swagger (API docs)
+│   │   │               │   └── DatabaseConfig.java   # Cấu hình cơ sở dữ liệu
+│   │   │               ├── controller/               # API endpoints
+│   │   │               │   ├── ProductController.java
+│   │   │               │   ├── OrderController.java
+│   │   │               │   ├── UserController.java
+│   │   │               │   └── CartController.java
+│   │   │               ├── service/                  # Logic nghiệp vụ
+│   │   │               │   ├── ProductService.java
+│   │   │               │   ├── OrderService.java
+│   │   │               │   ├── UserService.java
+│   │   │               │   └── CartService.java
+│   │   │               ├── repository/               # Truy cập dữ liệu (JPA, CRUD)
+│   │   │               │   ├── ProductRepository.java
+│   │   │               │   ├── OrderRepository.java
+│   │   │               │   ├── UserRepository.java
+│   │   │               │   └── CartRepository.java
+│   │   │               ├── model/                    # Các entity (bảng dữ liệu)
+│   │   │               │   ├── Product.java
+│   │   │               │   ├── Order.java
+│   │   │               │   ├── User.java
+│   │   │               │   └── Cart.java
+│   │   │               ├── dto/                      # Data Transfer Objects
+│   │   │               │   ├── ProductDTO.java
+│   │   │               │   ├── OrderDTO.java
+│   │   │               │   └── UserDTO.java
+│   │   │               ├── exception/                # Xử lý ngoại lệ
+│   │   │               │   ├── ResourceNotFoundException.java
+│   │   │               │   └── GlobalExceptionHandler.java
+│   │   │               └── util/                     # Các tiện ích hỗ trợ
+│   │   │                   ├── JwtUtil.java          # Xử lý JWT token
+│   │   │                   └── Constants.java       # Hằng số chung
+│   │   ├── resources/
+│   │       ├── application.properties               # Cấu hình ứng dụng (DB, port, etc.)
+│   │       ├── application-dev.properties           # Cấu hình môi trường dev
+│   │       ├── application-prod.properties          # Cấu hình môi trường prod
+│   │       └── static/                              # File tĩnh (nếu cần)
+│   └── test/                                        # Unit/Integration tests
+│       ├── java/
+│       │   └── com/
+│       │       └── example/
+│       │           └── ecommerce/
+│       │               ├── controller/
+│       │               │   └── ProductControllerTest.java
+│       │               ├── service/
+│       │               │   └── ProductServiceTest.java
+│       │               └── repository/
+│       │                   └── ProductRepositoryTest.java
+├── pom.xml                                          # File quản lý dependency Maven
+└── README.md                                        # Hướng dẫn dự án

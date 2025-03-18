@@ -1,7 +1,7 @@
 package com.javaweb.controller_advice;
 
 import com.javaweb.model.ErrorResponseDTO;
-import com.javaweb.custom_exception.FieldRequiredException;
+import com.javaweb.exception.FieldRequiredException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
