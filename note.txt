@@ -58,3 +58,46 @@ ecommerce-backend/
 │       │                   └── ProductRepositoryTest.java
 ├── pom.xml                                          # File quản lý dependency Maven
 └── README.md                                        # Hướng dẫn dự án
+
+
+=====================================================================================================
+
+Giả sử bạn vào quán cà phê, gọi một ly cà phê sữa. Quá trình này diễn ra như sau:
+    Bạn gọi món với nhân viên thu ngân.
+    Thu ngân gửi yêu cầu đến nhân viên pha chế.
+    Nhân viên pha chế kiểm tra nguyên liệu trong kho.
+    Nếu có nguyên liệu, pha chế xong sẽ đưa cho bạn.
+
+Trong hệ thống Spring Boot, mỗi thành phần đóng vai trò tương ứng:
+    Controller 🏢 = Nhân viên thu ngân.
+    Service ☕ = Nhân viên pha chế.
+    Repository 📦 = Kho nguyên liệu (CSDL).
+    Model (Entity) 📜 = Công thức pha chế.
+    DTO 🎁 = Cốc cà phê mang ra cho khách.
+
+Luồng hoạt động:
+    📌 Khách hàng (client) gửi yêu cầu HTTP POST, Controller nhận và gọi Service.
+    📌 Service xử lý logic chính: Kiểm tra nguyên liệu, gọi Repository để lấy dữ liệu.
+    📌 Repository tương tác với Database, lấy dữ liệu hoặc lưu đơn hàng mới.
+    📌 Repository tương tác với Database, lấy dữ liệu hoặc lưu đơn hàng mới.
+    📌 DTO giúp ẩn bớt dữ liệu không cần thiết, chỉ trả về thông tin cần thiết cho client.
+
+
+=====================================================================================================
+
+
+Frontend -------------------------------------> Backend -------------------------------------> Frontend
+   |                                              |                                              |
+   | 1. Gửi GET /api/categories?page=1&...        |                                              |
+   |--------------------------------------------->|                                              |
+   |                                              | 2. Controller nhận request, gọi Service      |
+   |                                              |--------------------------------------------->|
+   |                                              | 3. Service xử lý logic, gọi Repository       |
+   |                                              |--------------------------------------------->|
+   |                                              | 4. Repository truy vấn DB, trả dữ liệu       |
+   |                                              |<---------------------------------------------|
+   |                                              | 5. Service trả dữ liệu về Controller         |
+   |                                              |<---------------------------------------------|
+   |                                              | 6. Controller trả ResponseEntity (JSON)      |
+   |<---------------------------------------------|                                              |
+   | 7. Nhận JSON, cập nhật giao diện             |                                              |
