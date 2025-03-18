@@ -61,7 +61,6 @@ ecommerce-backend/
 
 
 =====================================================================================================
-
 Giả sử bạn vào quán cà phê, gọi một ly cà phê sữa. Quá trình này diễn ra như sau:
     Bạn gọi món với nhân viên thu ngân.
     Thu ngân gửi yêu cầu đến nhân viên pha chế.
@@ -83,9 +82,28 @@ Luồng hoạt động:
     📌 DTO giúp ẩn bớt dữ liệu không cần thiết, chỉ trả về thông tin cần thiết cho client.
 
 
+====================================================================================================
+* JPA (Java Persistence API) là một chuẩn giúp bạn làm việc với database bằng Java một cách dễ dàng hơn, thay vì phải viết SQL thủ công.
+
+* Hibernate là một ORM (Object-Relational Mapping) Framework giúp bạn tương tác với cơ sở dữ liệu (CSDL) bằng Java mà không cần viết câu lệnh SQL thuần.
+📌 Nói đơn giản, Hibernate giúp làm gì?
+Chuyển đổi đối tượng Java (Object) ↔ Bảng trong CSDL (Row)
+Tự động tạo bảng, truy vấn, insert, update, delete dữ liệu mà không cần viết SQL thủ công.
+Hỗ trợ caching, transaction, lazy loading, giúp tối ưu hiệu suất.
+
+- Hibernate hỗ trợ nhiều cách để tự thiết kế câu query tùy theo nhu cầu
+JPQL (@Query)	Ngắn gọn, dễ dùng	Không hỗ trợ SQL thuần
+Native Query (SQL gốc)	Mạnh mẽ, tối ưu hiệu suất	Không tận dụng được sức mạnh ORM
+Criteria API	Linh hoạt, không cần viết SQL thủ công	Cú pháp dài dòng
+HQL	Hỗ trợ hướng đối tượng	Cần học cú pháp riêng
+
+* Spring Data JPA không phải là một ORM, mà chỉ là một lớp abstraction (tầng trừu tượng) giúp làm việc với JPA (Java Persistence API) dễ dàng hơn. Còn Hibernate là một ORM cụ thể được Spring Data JPA sử dụng mặc định.
+📌 Nếu dùng Spring Data JPA với Hibernate: Bạn đang dùng Hibernate làm ORM để thao tác với CSDL thông qua JPA.
+📌 Nếu không có Hibernate: Bạn có thể thay Hibernate bằng một ORM khác hoặc tự viết JDBC để làm việc với CSDL.
+
+
+
 =====================================================================================================
-
-
 Frontend -------------------------------------> Backend -------------------------------------> Frontend
    |                                              |                                              |
    | 1. Gửi GET /api/categories?page=1&...        |                                              |
