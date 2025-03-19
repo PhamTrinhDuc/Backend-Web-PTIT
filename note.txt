@@ -1,3 +1,6 @@
+
+
+
 ecommerce-backend/
 ├── src/
 │   ├── main/
@@ -102,7 +105,6 @@ HQL	Hỗ trợ hướng đối tượng	Cần học cú pháp riêng
 📌 Nếu không có Hibernate: Bạn có thể thay Hibernate bằng một ORM khác hoặc tự viết JDBC để làm việc với CSDL.
 
 
-
 =====================================================================================================
 Frontend -------------------------------------> Backend -------------------------------------> Frontend
    |                                              |                                              |
@@ -119,3 +121,23 @@ Frontend -------------------------------------> Backend ------------------------
    |                                              | 6. Controller trả ResponseEntity (JSON)      |
    |<---------------------------------------------|                                              |
    | 7. Nhận JSON, cập nhật giao diện             |                                              |
+
+
+=====================================================================================================
+* Quan hệ nhiều dữ liệu (OneToMany, ManyToMany) → FetchType.LAZY ✅ => dữ liệu liên kết sẽ chỉ được tải khi thực sự cần thiết.
+Quan hệ đơn giản, ít dữ liệu (OneToOne, ManyToOne) → có thể để EAGER nhưng nên test hiệu suất 🚀 => muốn luôn tải dữ liệu liên quan ngay lập tức, dùng EAGER.
+
+
+* CascadeType	    Mô tả
+ALL	            Áp dụng tất cả các loại cascade.
+PERSIST	        Khi lưu entity cha, entity con cũng được lưu.
+MERGE	        Khi cập nhật entity cha, entity con cũng được cập nhật.
+REMOVE	        Khi xóa entity cha, entity con cũng bị xóa.
+REFRESH	        Khi làm mới entity cha, entity con cũng được làm mới từ database.
+DETACH	        Khi tách entity cha khỏi Persistence Context, entity con cũng bị tách.
+
+
+* @Transactional được dùng để quản lý giao dịch (transaction) trong Spring. Nó đảm bảo rằng nếu một đoạn code thực hiện nhiều thao tác (SELECT, INSERT, UPDATE, DELETE) trên database thì:
+
+Thành công → Commit dữ liệu vào DB.
+Thất bại (lỗi, exception) → Rollback (hủy bỏ tất cả thay đổi).
