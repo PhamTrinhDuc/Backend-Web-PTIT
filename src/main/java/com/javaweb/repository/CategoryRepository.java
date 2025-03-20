@@ -1,10 +1,11 @@
 package com.javaweb.repository;
 
-import com.javaweb.model.ProductsEntity;
+import com.javaweb.model.CategoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
+public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
     boolean existsByName(String name);
 }
+
