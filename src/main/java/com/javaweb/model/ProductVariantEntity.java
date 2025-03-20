@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Map;
 
 @Entity

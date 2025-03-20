@@ -35,11 +35,13 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-
     public ResponseObject<ProductDTO> findProductById(Long id){
         try {
             ProductsEntity productsEntity = productRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));
+
+            System.out.println("Product entity: " + productsEntity);
+
 
             ProductDTO productDTO = productConverter.toDTO(productsEntity);
 
@@ -64,8 +66,7 @@ public class ProductServiceImpl implements ProductService {
             if(id!= null){
                 productsEntity = productRepository.findById(id)
                         .orElse(new ProductsEntity());
-            }
-            else {
+            } else {
                 productsEntity = new ProductsEntity();
             }
             productsEntity = productConverter.toEntity(productDTO);

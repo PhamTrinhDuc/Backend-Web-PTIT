@@ -7,6 +7,9 @@ public class ProductDTO {
     private String brand;
     private String description;
 
+    public ProductDTO() {
+    }
+
     public ProductDTO(Long id, String name, String brand, String description) {
         this.id = id;
         this.name = name;

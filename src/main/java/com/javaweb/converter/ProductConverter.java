@@ -1,29 +1,27 @@
 package com.javaweb.converter;
 
-
 import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ProductsEntity;
 import org.springframework.stereotype.Component;
+import org.modelmapper.ModelMapper;
+
 
 @Component
 public class ProductConverter {
 
-    // Convert từ Entity -> DTO
-    public ProductDTO toDTO(ProductsEntity entity) {
-        return new ProductDTO(
-                entity.getId(),
-                entity.getName(),
-                entity.getBrand(),
-                entity.getDescription()
-        );
+    private final ModelMapper modelMapper;
+
+    public ProductConverter(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
 
-    // Convert từ DTO -> Entity
-    public ProductsEntity toEntity(ProductDTO dto) {
-        ProductsEntity entity = new ProductsEntity();
-        entity.setId(dto.getId()); // Nếu ID null, JPA sẽ tự động tạo ID mới khi insert
-        entity.setName(dto.getName());
-        entity.setDescription(dto.getDescription());
-        return entity;
+    // Chuyển từ Entity sang DTO
+    public ProductDTO toDTO(ProductsEntity productEntity) {
+        return modelMapper.map(productEntity, ProductDTO.class);
+    }
+
+    // Chuyển từ DTO sang Entity
+    public ProductsEntity toEntity(ProductDTO productDTO) {
+        return modelMapper.map(productDTO, ProductsEntity.class);
     }
 }
