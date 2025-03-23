@@ -23,14 +23,17 @@ public class ProductVariantEntity {
     private double price;
 
     @Type(JsonBinaryType.class)
-    @Column(columnDefinition = "specificaton")
+    @Column(columnDefinition = "jsonb")
     Map<String, Object> specification;
 
     @Column(name = "discount")
     private double discount;
 
-    @Column(name = "desciption")
-    private String desciption;
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "quantity_stock")
+    private int quantity_stock;
 
     @Column(name = "created")
     private java.sql.Timestamp created;
@@ -42,7 +45,7 @@ public class ProductVariantEntity {
     @JoinColumn(name = "product_id", nullable = false) // foreign key
     public ProductsEntity products;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -82,12 +85,20 @@ public class ProductVariantEntity {
         this.discount = discount;
     }
 
-    public String getDesciption() {
-        return desciption;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDesciption(String desciption) {
-        this.desciption = desciption;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public int getQuantityStock() {
+        return quantity_stock;
+    }
+
+    public void setQuantityStock(int quantity_stock) {
+        this.quantity_stock = quantity_stock;
     }
 
     public Timestamp getCreated() {
