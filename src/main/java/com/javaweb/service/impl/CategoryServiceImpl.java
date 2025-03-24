@@ -28,7 +28,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Autowired
     private CategoryConverter categoryConverter;
 
-
     public ResponseObject<List<CategoryDTO>> findAllCategory() {
         try {
             List<CategoryEntity> categories = categoryRepository.findAll();
@@ -44,10 +43,10 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
-    public ResponseObject<CategoryDTO> findCategoryById(Long id) {
+    public ResponseObject<CategoryDTO> findCategoryBySlug(String slug) {
         try {
-            CategoryEntity categoryEntity = categoryRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("Category not found with id: " + id));
+            CategoryEntity categoryEntity = categoryRepository.findBySlug(slug)
+                    .orElseThrow(() -> new NotFoundException("Category not found with id: " + slug));
 
             CategoryDTO categoryDTO = categoryConverter.toDTO(categoryEntity);
 

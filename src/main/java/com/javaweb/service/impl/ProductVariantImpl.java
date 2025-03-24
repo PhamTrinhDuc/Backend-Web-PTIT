@@ -3,8 +3,10 @@ package com.javaweb.service.impl;
 import com.javaweb.converter.ProductVariantConverter;
 import com.javaweb.dto.ProductVariantDTO;
 import com.javaweb.exception.NotFoundException;
+import com.javaweb.model.CategoryEntity;
 import com.javaweb.model.ProductVariantEntity;
 import com.javaweb.model.ResponseObject;
+import com.javaweb.repository.CategoryRepository;
 import com.javaweb.repository.ProductVariantRepository;
 import com.javaweb.service.ProductVariantService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 
 @Service
@@ -20,6 +23,7 @@ public class ProductVariantImpl implements ProductVariantService {
     private ProductVariantRepository productVariantRepository;
     @Autowired
     private ProductVariantConverter productVariantConverter;
+    @Autowired CategoryRepository categoryRepository;
 
     public ResponseObject<Page<ProductVariantDTO>> getAllProductVariant(Pageable pageable){
         try {
@@ -46,6 +50,29 @@ public class ProductVariantImpl implements ProductVariantService {
             return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
+    public ResponseObject<List<ProductVariantDTO>> getProductVariantsByCategorySlug(String categorySlug) {
+        try {
+            // Kiểm tra category có tồn tại không
+            categoryRepository.findBySlug(categorySlug)
+                    .orElseThrow(() -> new NotFoundException("Category not found with slug: " + categorySlug));
+            // Lấy danh sách ProductVariant
+            List<ProductVariantEntity> variants = productVariantRepository.findByCategorySlug(categorySlug);
+            if (variants.isEmpty()) {
+                throw new NotFoundException("No product variants found for category with slug: " + categorySlug);
+            }
+            // Chuyển đổi sang DTO
+            List<ProductVariantDTO> variantDTOs = variants.stream()
+                    .map(ProductVariantDTO::new)
+                    .toList();
+            return ResponseObject.success(variantDTOs);
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
 
     public ResponseObject<ProductVariantEntity> saveOrUpdateProductVariant(ProductVariantDTO productVariantDTO){
         try {

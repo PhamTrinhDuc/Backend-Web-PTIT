@@ -14,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class ProductServiceImpl implements ProductService {
 
@@ -35,7 +38,45 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
+    public ResponseObject<List<ProductDTO>> findProductsByCategorySlug(String categorySlug) {
+        try {
+            List<ProductsEntity> products = productRepository.findByCategorySlug(categorySlug);
+
+            if (products.isEmpty()) {
+                return ResponseObject.error("No products found for category: " + categorySlug, HttpStatus.NOT_FOUND);
+            }
+
+            List<ProductDTO> productDTOs = products.stream()
+                    .map(productConverter::toDTO)
+                    .collect(Collectors.toList());
+
+            return ResponseObject.success(productDTOs);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseObject.error("Failed to fetch products by category slug", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public ResponseObject<ProductDTO> findProductById(Long id){
+        try {
+            ProductsEntity productsEntity = productRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));
+
+            System.out.println("Product entity: " + productsEntity);
+
+
+            ProductDTO productDTO = productConverter.toDTO(productsEntity);
+
+            return ResponseObject.success(productDTO);
+        } catch (NotFoundException e) {
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseObject.error("Failed to fetch category by id", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseObject<ProductDTO> findProductByCategory(Long id){
         try {
             ProductsEntity productsEntity = productRepository.findById(id)
                     .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));

@@ -5,6 +5,7 @@ import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ProductsEntity;
 import com.javaweb.model.ResponseObject;
 import com.javaweb.service.ProductService;
+import com.javaweb.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,11 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/product")
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @GetMapping
     public ResponseEntity<ResponseObject<Page<ProductDTO>>> getAllProducts(
@@ -28,10 +31,15 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<ProductDTO>> getProductById(@PathVariable Long id) {
-        return ResponseEntity.ok(productService.findProductById(id));
+    @GetMapping("/{categorySlug}")
+    public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByCategorySlug(@PathVariable String categorySlug) {
+        return ResponseEntity.ok(productService.findProductsByCategorySlug(categorySlug));
     }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<ResponseObject<ProductDTO>> getProductById(@PathVariable Long id) {
+//        return ResponseEntity.ok(productService.findProductById(id));
+//    }
 
     @PostMapping
     public ResponseEntity<ResponseObject<ProductsEntity>> saveOrUpdateProduct(@RequestBody ProductDTO productDTO) {

@@ -22,9 +22,9 @@ public class CategoryController {
         return ResponseEntity.ok(categories);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseObject<CategoryDTO>> getCategoryById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.findCategoryById(id));
+    @GetMapping("/{slug}")
+    public ResponseEntity<ResponseObject<CategoryDTO>> getCategoryBySlug(@PathVariable String slug) {
+        return ResponseEntity.ok(categoryService.findCategoryBySlug(slug));
     }
 
     @PostMapping
