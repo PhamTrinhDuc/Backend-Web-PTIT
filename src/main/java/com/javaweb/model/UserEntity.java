@@ -31,6 +31,9 @@ public class UserEntity {
     @Column(name = "updated_at")
     private java.sql.Timestamp updatedAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserProfileEntity userProfile;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderEntity> order_entity;
 
@@ -88,5 +91,13 @@ public class UserEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public UserProfileEntity getUserProfile() {
+        return userProfile;
+    }
+
+    public void setUserProfile(UserProfileEntity userProfile) {
+        this.userProfile = userProfile;
     }
 }
