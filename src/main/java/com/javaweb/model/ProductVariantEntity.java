@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.Type;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -44,6 +45,9 @@ public class ProductVariantEntity {
     @ManyToOne()
     @JoinColumn(name = "product_id", nullable = false) // foreign key
     public ProductsEntity products;
+
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<ProductImageEntity> productImageEntityList;
 
     public Long getId() {
         return id;
@@ -123,5 +127,13 @@ public class ProductVariantEntity {
 
     public void setProducts(ProductsEntity products) {
         this.products = products;
+    }
+
+    public List<ProductImageEntity> getProductImageEntityList() {
+        return productImageEntityList;
+    }
+
+    public void setProductImageEntityList(List<ProductImageEntity> productImageEntityList) {
+        this.productImageEntityList = productImageEntityList;
     }
 }
