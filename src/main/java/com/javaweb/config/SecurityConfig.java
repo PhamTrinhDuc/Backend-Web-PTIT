@@ -33,16 +33,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Tắt CSRF
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Không dùng session
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/product/**",
-                                "/api/category/**",
-                                "/api/product_variant/**",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui.html").permitAll() // Cho phép truy cập API đăng nhập
-
-                        .requestMatchers("/api/users/**").authenticated() // xác thực cho /api/users/**
                         .anyRequest().authenticated() // Các request khác cần xác thực
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),

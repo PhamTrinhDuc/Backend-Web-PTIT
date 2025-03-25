@@ -45,7 +45,6 @@ public class AuthController {
 
         String jwt = jwtTokenProvider.generateToken(authentication);
 
-        UserEntity user = userService.findByUsername(loginRequest.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDTO userDTO = new UserDTO(user);
@@ -56,12 +55,8 @@ public class AuthController {
     // Endpoint đăng ký
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
-        try {
             UserEntity user = userService.registerUser(registerRequest);
             UserDTO userDTO = new UserDTO(user);
             return ResponseEntity.ok(new RegisterResponseDTO(userDTO, "Registration successful"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
     }
 }
