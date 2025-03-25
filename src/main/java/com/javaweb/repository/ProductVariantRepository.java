@@ -13,3 +13,4 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
             "WHERE pv.products.category.slug = :categorySlug")
     List<ProductVariantEntity> findByCategorySlug(@Param("categorySlug") String categorySlug);
 }
+

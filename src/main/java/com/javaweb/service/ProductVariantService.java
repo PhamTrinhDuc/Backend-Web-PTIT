@@ -13,3 +13,4 @@ public interface ProductVariantService {
       ResponseObject<ProductVariantEntity> saveOrUpdateProductVariant(ProductVariantDTO productVariantDTO);
       ResponseObject<Void> deleteProductVariant(Long id);
 }
+

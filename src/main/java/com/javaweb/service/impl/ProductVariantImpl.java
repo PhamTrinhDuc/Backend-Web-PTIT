@@ -50,7 +50,6 @@ public class ProductVariantImpl implements ProductVariantService {
             return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
     public ResponseObject<List<ProductVariantDTO>> getProductVariantsByCategorySlug(String categorySlug) {
         try {
             // Kiểm tra category có tồn tại không

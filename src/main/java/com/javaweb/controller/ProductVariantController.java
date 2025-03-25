@@ -33,7 +33,6 @@ public class ProductVariantController {
         ResponseObject<Page<ProductVariantDTO>> productVariants = productVariantService.getAllProductVariant(pageable);
         return ResponseEntity.ok(productVariants);
     }
-
     @GetMapping("/{categorySlug}")
     public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getProductVariantsByCategorySlug(
             @PathVariable String categorySlug) {
