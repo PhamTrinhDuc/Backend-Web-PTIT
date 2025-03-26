@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariantEntity, Long> {
     boolean existsByName(String name);
@@ -16,5 +17,6 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
     @Query("SELECT pv FROM ProductVariantEntity pv " +
             "ORDER BY pv.discount DESC")
     List<ProductVariantEntity> findAllSortedByDiscountDesc();
+    Optional<ProductVariantEntity> findById(Long id);
 }
 

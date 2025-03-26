@@ -42,7 +42,6 @@ public class OrderServiceImpl implements OrderService {
         OrderEntity order = new OrderEntity();
         order.setUserEntity(user);
         order.setOrderDate(LocalDateTime.now());
-        order.setShippingAddress(orderDTO.getShippingAddress());
         order.setStatus("PENDING");
         order.setTotalAmount(0.0);
 

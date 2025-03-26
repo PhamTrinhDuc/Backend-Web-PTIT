@@ -42,12 +42,16 @@ public class ProductVariantEntity {
     @Column(name = "updated")
     private java.sql.Timestamp updated;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "product_id", nullable = false) // foreign key
     public ProductsEntity products;
 
     @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductImageEntity> productImageEntityList;
+
+    @OneToMany(mappedBy = "productVariant", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<CartItemEntity> cartEntities;
+
 
     public Long getId() {
         return id;

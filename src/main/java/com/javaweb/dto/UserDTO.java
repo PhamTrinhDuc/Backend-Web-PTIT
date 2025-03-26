@@ -13,6 +13,7 @@ public class UserDTO {
     private String email;
     private String role;
     private String fullname;
+    private String phone_number;
     private String avatar;
     private String birthday;
     private String gender;
@@ -29,6 +30,7 @@ public class UserDTO {
         UserProfileEntity userProfile = user.getUserProfile();
         if (userProfile != null) {
             this.fullname = userProfile.getFullname();
+            this.phone_number = userProfile.getPhone();
             this.avatar = userProfile.getAvatar();
             this.birthday = userProfile.getBirthday();
             this.gender = userProfile.getGender();
@@ -53,6 +55,14 @@ public class UserDTO {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPhoneNumber() {
+        return phone_number;
+    }
+
+    public void setPhoneNumber(String phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getEmail() {

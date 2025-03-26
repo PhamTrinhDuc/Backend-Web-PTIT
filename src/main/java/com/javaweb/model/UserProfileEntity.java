@@ -23,8 +23,8 @@ public class UserProfileEntity {
     @Column(name = "gender")
     private String gender;
 
-    @Column(name = "phone")
-    private String phone;
+    @Column(name = "phone_number")
+    private String phone_number;
 
     @Column(name = "address")
     private String address;
@@ -83,11 +83,11 @@ public class UserProfileEntity {
     }
 
     public String getPhone() {
-        return phone;
+        return phone_number;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhone(String phone_number) {
+        this.phone_number = phone_number;
     }
 
     public String getGender() {

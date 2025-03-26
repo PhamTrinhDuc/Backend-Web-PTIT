@@ -14,6 +14,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+
+
+
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -37,6 +41,7 @@ public class SecurityConfig {
                                 "/api/product/**",
                                 "/api/category/**",
                                 "/api/product_variant/**",
+                                "/api/cart/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html").permitAll() // Cho phép truy cập API đăng nhập
