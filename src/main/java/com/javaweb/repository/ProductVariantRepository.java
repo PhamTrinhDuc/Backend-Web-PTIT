@@ -12,5 +12,9 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
     @Query("SELECT pv FROM ProductVariantEntity pv " +
             "WHERE pv.products.category.slug = :categorySlug")
     List<ProductVariantEntity> findByCategorySlug(@Param("categorySlug") String categorySlug);
+
+    @Query("SELECT pv FROM ProductVariantEntity pv " +
+            "ORDER BY pv.discount DESC")
+    List<ProductVariantEntity> findAllSortedByDiscountDesc();
 }
 

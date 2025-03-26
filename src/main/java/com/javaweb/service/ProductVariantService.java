@@ -4,13 +4,15 @@ import com.javaweb.dto.ProductDTO;
 import com.javaweb.dto.ProductVariantDTO;
 import com.javaweb.model.ProductVariantEntity;
 import com.javaweb.model.ResponseObject;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface ProductVariantService {
-      ResponseObject<Page<ProductVariantDTO>> getAllProductVariant(Pageable pageable);
+      ResponseObject<List<ProductVariantDTO>> getAllProductVariant();
       ResponseObject<ProductVariantDTO> getProductVariantById(Long id);
       ResponseObject<ProductVariantEntity> saveOrUpdateProductVariant(ProductVariantDTO productVariantDTO);
       ResponseObject<Void> deleteProductVariant(Long id);
+      ResponseObject<List<ProductVariantDTO>> getProductVariantByDiscount();
+      ResponseObject<List<ProductVariantDTO>> getProductVariantBySale();
 }
 

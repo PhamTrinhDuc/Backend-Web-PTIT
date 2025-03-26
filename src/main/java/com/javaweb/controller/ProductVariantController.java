@@ -25,14 +25,21 @@ public class ProductVariantController {
     private ProductVariantImpl productVariantService;
 
     @GetMapping
-    public ResponseEntity<ResponseObject<Page<ProductVariantDTO>>> getAllProductVariant(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
+    public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getAllProductVariant(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "12") int size
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        ResponseObject<Page<ProductVariantDTO>> productVariants = productVariantService.getAllProductVariant(pageable);
+//        Pageable pageable = PageRequest.of(page, size);
+        ResponseObject<List<ProductVariantDTO>> productVariants = productVariantService.getAllProductVariant();
         return ResponseEntity.ok(productVariants);
     }
+
+    @GetMapping("/by-discount")
+    public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getProductVariantsByDiscount() {
+        ResponseObject<List<ProductVariantDTO>> response = productVariantService.getProductVariantByDiscount();
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
     @GetMapping("/{categorySlug}")
     public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getProductVariantsByCategorySlug(
             @PathVariable String categorySlug) {
@@ -40,10 +47,10 @@ public class ProductVariantController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<ResponseObject<ProductVariantDTO>> getProductVariantById(@PathVariable Long id) {
-//        return ResponseEntity.ok(productVariantService.getProductVariantById(id));
-//    }
+    @GetMapping("/id/{id}")
+    public ResponseEntity<ResponseObject<ProductVariantDTO>> getProductVariantById(@PathVariable Long id) {
+        return ResponseEntity.ok(productVariantService.getProductVariantById(id));
+    }
 
     @PostMapping
     public ResponseEntity<ResponseObject<ProductVariantEntity>> saveOrUpdateProductVariant(@RequestBody ProductVariantDTO productVariantDTO) {

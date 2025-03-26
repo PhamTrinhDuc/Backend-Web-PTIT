@@ -15,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -25,18 +26,45 @@ public class ProductVariantImpl implements ProductVariantService {
     private ProductVariantConverter productVariantConverter;
     @Autowired CategoryRepository categoryRepository;
 
-    public ResponseObject<Page<ProductVariantDTO>> getAllProductVariant(Pageable pageable){
+    public ResponseObject<List<ProductVariantDTO>> getAllProductVariant() {
         try {
-            Page<ProductVariantEntity> pageProductVariant = productVariantRepository.findAll(pageable);
+            List<ProductVariantEntity> productVariants = productVariantRepository.findAll();
 
-            Page<ProductVariantDTO> pageProductVariantDTO = pageProductVariant.map(ProductVariantDTO::new);
-
-            return ResponseObject.success(pageProductVariantDTO);
-        } catch (Exception e){
+            List<ProductVariantDTO> productVariantDTOs = productVariants.stream()
+                    .map(ProductVariantDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseObject.success(productVariantDTOs);
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.error(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public ResponseObject<List<ProductVariantDTO>> getProductVariantByDiscount(){
+        try {
+            // Lấy danh sách ProductVariant đã sắp xếp theo discount giảm dần
+            List<ProductVariantEntity> variants = productVariantRepository.findAllSortedByDiscountDesc();
+            if (variants.isEmpty()) {
+                throw new NotFoundException("No product variants found");
+            }
+
+            // Chuyển đổi sang DTO
+            List<ProductVariantDTO> variantDTOs = variants.stream()
+                    .map(ProductVariantDTO::new)
+                    .toList();
+
+            return ResponseObject.success(variantDTOs);
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseObject<List<ProductVariantDTO>> getProductVariantBySale(){
+        return null;
+    }
+
 
     public ResponseObject<ProductVariantDTO> getProductVariantById(Long id){
         try {
@@ -50,6 +78,7 @@ public class ProductVariantImpl implements ProductVariantService {
             return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
+
     public ResponseObject<List<ProductVariantDTO>> getProductVariantsByCategorySlug(String categorySlug) {
         try {
             // Kiểm tra category có tồn tại không
@@ -71,7 +100,6 @@ public class ProductVariantImpl implements ProductVariantService {
             return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
         }
     }
-
 
     public ResponseObject<ProductVariantEntity> saveOrUpdateProductVariant(ProductVariantDTO productVariantDTO){
         try {
