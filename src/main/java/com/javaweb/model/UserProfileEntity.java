@@ -1,9 +1,7 @@
 package com.javaweb.model;
-
-
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
-import java.sql.Timestamp;
 
 @Entity
 @Table(name = "user_profile")
@@ -32,13 +30,17 @@ public class UserProfileEntity {
     private String address;
 
     @Column(name = "created_at")
-    private java.sql.Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private java.sql.Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     @Column(name = "status")
     private String status;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 
     public long getId() {
         return id;
@@ -56,19 +58,19 @@ public class UserProfileEntity {
         this.status = status;
     }
 
-    public Timestamp getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
+    public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
-    public Timestamp getUpdatedAt() {
+    public LocalDateTime getUpdatedAt() {
         return updatedAt;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
+    public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
     }
 
@@ -119,4 +121,8 @@ public class UserProfileEntity {
     public void setFullname(String fullname) {
         this.fullname = fullname;
     }
+
+    public UserEntity getUser() { return user; }
+    public void setUser(UserEntity user) { this.user = user; }
+
 }

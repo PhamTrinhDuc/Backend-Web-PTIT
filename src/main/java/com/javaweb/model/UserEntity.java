@@ -100,4 +100,5 @@ public class UserEntity {
     public void setUserProfile(UserProfileEntity userProfile) {
         this.userProfile = userProfile;
     }
+
 }
