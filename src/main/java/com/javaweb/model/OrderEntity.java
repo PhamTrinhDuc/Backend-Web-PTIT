@@ -20,6 +20,9 @@ public class OrderEntity {
     @Column(name = "status")
     private String status;
 
+    @Column(name = "payment_method")
+    private String payment_method;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderDetailEntity> orderDetails;
 
@@ -73,5 +76,29 @@ public class OrderEntity {
 
     public void setUserEntity(UserEntity userEntity) {
         this.user= userEntity;
+    }
+
+    public LocalDateTime getOrder_date() {
+        return order_date;
+    }
+
+    public void setOrder_date(LocalDateTime order_date) {
+        this.order_date = order_date;
+    }
+
+    public String getPaymentMethod() {
+        return payment_method;
+    }
+
+    public void setPaymentMethod(String payment_method) {
+        this.payment_method = payment_method;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }

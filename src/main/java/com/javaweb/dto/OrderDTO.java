@@ -1,10 +1,15 @@
 package com.javaweb.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OrderDTO {
     private Long userId;
     private List<OrderDetailDTO> items;
+    private String paymentMethod;
 
     // Getters and Setters
     public Long getUserId() {
@@ -21,5 +26,13 @@ public class OrderDTO {
 
     public void setItems(List<OrderDetailDTO> items) {
         this.items = items;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 }

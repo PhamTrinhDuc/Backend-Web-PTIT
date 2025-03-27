@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
         order.setTotalAmount(0.0);
+        order.setPaymentMethod(orderDTO.getPaymentMethod());
 
         // 3. Kiểm tra và cập nhật số lượng tồn kho
         List<OrderDetailEntity> orderDetails = new ArrayList<>();
@@ -51,12 +52,12 @@ public class OrderServiceImpl implements OrderService {
 
         for(OrderDetailDTO itemDTO: orderDTO.getItems()){
             ProductVariantEntity productVariant = productVariantRepository
-                    .findById(itemDTO.getVariantId())
-                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemDTO.getVariantId()));
+                    .findById(itemDTO.getId())
+                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemDTO.getId()));
 
             // kiểm tra số lượng trong kho
             if (productVariant.getQuantityStock() < itemDTO.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product variant: " + itemDTO.getVariantId() +
+                throw new RuntimeException("Not enough stock for product variant: " + itemDTO.getId() +
                         ". Available: " + productVariant.getQuantityStock() + ", Requested: " + itemDTO.getQuantity());
             }
 

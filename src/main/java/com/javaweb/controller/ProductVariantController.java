@@ -55,4 +55,19 @@ public class ProductVariantController {
     public ResponseEntity<ResponseObject<Void>> deleteProductVariant(@RequestParam Long id) {
         return ResponseEntity.ok(productVariantService.deleteProductVariant(id));
     }
+
+    @GetMapping("/filter/price")
+    public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getProductVariantsByPriceRange(
+            @RequestParam Double minPrice,
+            @RequestParam Double maxPrice) {
+        ResponseObject<List<ProductVariantDTO>> response = productVariantService.getProductVariantsByPriceRange(minPrice, maxPrice);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
+
+    @GetMapping("/sort")
+    public ResponseEntity<ResponseObject<List<ProductVariantDTO>>> getProductVariantsSortedBy(
+            @RequestParam String sortBy) {
+        ResponseObject<List<ProductVariantDTO>> response = productVariantService.getProductVariantsSortedBy(sortBy);
+        return new ResponseEntity<>(response, response.getStatus());
+    }
 }

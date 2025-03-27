@@ -14,5 +14,7 @@ public interface ProductVariantService {
       ResponseObject<Void> deleteProductVariant(Long id);
       ResponseObject<List<ProductVariantDTO>> getProductVariantByDiscount();
       ResponseObject<List<ProductVariantDTO>> getProductVariantBySale();
+      ResponseObject<List<ProductVariantDTO>> getProductVariantsByPriceRange(Double minPrice, Double maxPrice);
+      ResponseObject<List<ProductVariantDTO>> getProductVariantsSortedBy(String sortBy);
 }
 

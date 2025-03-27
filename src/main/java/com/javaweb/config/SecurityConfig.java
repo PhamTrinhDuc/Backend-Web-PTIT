@@ -42,6 +42,7 @@ public class SecurityConfig {
                                 "/api/category/**",
                                 "/api/product_variant/**",
                                 "/api/cart/**",
+                                "/api/orders/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html").permitAll() // Cho phép truy cập API đăng nhập

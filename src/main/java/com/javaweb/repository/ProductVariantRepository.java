@@ -17,6 +17,25 @@ public interface ProductVariantRepository extends JpaRepository<ProductVariantEn
     @Query("SELECT pv FROM ProductVariantEntity pv " +
             "ORDER BY pv.discount DESC")
     List<ProductVariantEntity> findAllSortedByDiscountDesc();
-    Optional<ProductVariantEntity> findById(Long id);
+//    Optional<ProductVariantEntity> findById(Long id);
+
+    // Lọc theo khoảng giá
+    @Query("SELECT pv FROM ProductVariantEntity pv " +
+            "WHERE pv.price BETWEEN :minPrice AND :maxPrice")
+    List<ProductVariantEntity> findByPriceRange(
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice);
+
+    // Sắp xếp theo tiêu chí
+    @Query("SELECT pv FROM ProductVariantEntity pv " +
+            "ORDER BY " +
+            "CASE WHEN :sortBy = 'newest' THEN pv.created END DESC, " +
+            "CASE WHEN :sortBy = 'price_asc' THEN pv.price END ASC, " +
+            "CASE WHEN :sortBy = 'price_desc' THEN pv.price END DESC, " +
+            "CASE WHEN :sortBy = 'name_asc' THEN pv.name END ASC "
+//            "CASE WHEN :sortBy = 'rating' THEN pv.rating END DESC"
+           )
+    List<ProductVariantEntity> findAllSortedBy(
+            @Param("sortBy") String sortBy);
 }
 

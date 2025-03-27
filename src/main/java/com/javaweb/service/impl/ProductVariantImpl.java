@@ -134,4 +134,65 @@ public class ProductVariantImpl implements ProductVariantService {
         productVariantRepository.deleteById(id);
         return ResponseObject.success(null);
     }
+
+    // Lọc theo khoảng giá
+    public ResponseObject<List<ProductVariantDTO>> getProductVariantsByPriceRange(Double minPrice, Double maxPrice) {
+        try {
+            // Kiểm tra giá trị đầu vào
+            if (minPrice < 0 || maxPrice < minPrice) {
+                throw new IllegalArgumentException("Invalid price range: minPrice must be >= 0 and <= maxPrice");
+            }
+
+            // Lấy danh sách ProductVariant
+            List<ProductVariantEntity> variants = productVariantRepository.findByPriceRange(minPrice, maxPrice);
+            if (variants.isEmpty()) {
+                throw new NotFoundException("No product variants found in the given price range");
+            }
+
+            // Chuyển đổi sang DTO
+            List<ProductVariantDTO> variantDTOs = variants.stream()
+                    .map(ProductVariantDTO::new)
+                    .toList();
+
+            return ResponseObject.success(variantDTOs);
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    // Sắp xếp theo tiêu chí
+    public ResponseObject<List<ProductVariantDTO>> getProductVariantsSortedBy(String sortBy) {
+        try {
+            // Kiểm tra sortBy hợp lệ
+            List<String> validSortOptions = List.of("newest", "price_asc", "price_desc", "name_asc", "rating");
+            if (!validSortOptions.contains(sortBy)) {
+                throw new IllegalArgumentException("Invalid sortBy value. Must be one of: " + validSortOptions);
+            }
+
+            // Lấy danh sách ProductVariant
+            List<ProductVariantEntity> variants = productVariantRepository.findAllSortedBy(sortBy);
+            if (variants.isEmpty()) {
+                throw new NotFoundException("No product variants found");
+            }
+
+            // Chuyển đổi sang DTO
+            List<ProductVariantDTO> variantDTOs = variants.stream()
+                    .map(ProductVariantDTO::new)
+                    .toList();
+
+            return ResponseObject.success(variantDTOs);
+
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            return ResponseObject.error(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 }
