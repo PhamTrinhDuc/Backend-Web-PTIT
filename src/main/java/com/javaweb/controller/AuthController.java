@@ -2,17 +2,16 @@ package com.javaweb.controller;
 
 import com.javaweb.dto.*;
 import com.javaweb.model.UserEntity;
-import com.javaweb.repository.UserRepository;
 import com.javaweb.security.JwtTokenProvider;
 import com.javaweb.service.impl.UserServiceImpl;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,20 +19,20 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final UserServiceImpl userService;
 
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private UserServiceImpl userService;
+    public AuthController(AuthenticationManager authenticationManager,
+                          JwtTokenProvider jwtTokenProvider,
+                          UserServiceImpl userService) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenProvider = jwtTokenProvider;
+        this.userService = userService;
+    }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -46,22 +45,22 @@ public class AuthController {
         String jwt = jwtTokenProvider.generateToken(authentication);
 
         UserEntity user = userService.findByUsername(loginRequest.getUsername())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("User not found after authentication"));
 
-        UserDTO userDTO = new UserDTO(user);
-
+        UserDTO userDTO = new UserDTO(user); // This should now work
         return ResponseEntity.ok(new LoginResponseDTO(jwt, userDTO));
     }
 
-    // Endpoint đăng ký
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
         try {
             UserEntity user = userService.registerUser(registerRequest);
-            UserDTO userDTO = new UserDTO(user);
-            return ResponseEntity.ok(new RegisterResponseDTO(userDTO, "Registration successful"));
+            UserDTO userDTO = new UserDTO(user); // This should now work
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(new RegisterResponseDTO(userDTO, "Registration successful"));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
         }
     }
 }

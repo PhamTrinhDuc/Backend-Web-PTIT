@@ -1,6 +1,6 @@
 package com.javaweb.controller;
 
-import com.javaweb.dto.UpdateProfileRequestDTO;
+import com.javaweb.dto.UpdateUserRequestDTO;
 import com.javaweb.dto.UserDTO;
 import com.javaweb.model.UserEntity;
 import com.javaweb.service.impl.UserServiceImpl;
@@ -21,7 +21,7 @@ public class UserController {
     private UserServiceImpl userService;
 
     @PutMapping("/me/profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateProfileRequestDTO request,
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserRequestDTO request,
                                            Authentication authentication) {
         try{
             String username = authentication.getName();

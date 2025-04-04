@@ -11,6 +11,7 @@ import java.util.List;
 
 public interface CategoryService {
     ResponseObject<List<CategoryDTO>> findAllCategory();
+    ResponseObject<CategoryDTO> findCategoryBySlug(String slug);
     ResponseObject<CategoryEntity> saveOrUpdateCategory(CategoryDTO categoryDTO);
     ResponseObject<Void> deleteCategory(Long id);
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GeneratedColumn;
 
 @Entity
-@Table(name="products_images")
+@Table(name="product_images")
 public class ProductImageEntity {
 
     @Id
@@ -16,8 +16,8 @@ public class ProductImageEntity {
     private String imagePath;
 
     @ManyToOne
-    @JoinColumn(name = "variant_id")
-    private ProductVariantEntity productVariant;
+    @JoinColumn(name = "product_id")
+    private ProductsEntity products;
 
     public Long getId() {
         return id;
@@ -35,11 +35,11 @@ public class ProductImageEntity {
         this.imagePath = imagePath;
     }
 
-    public ProductVariantEntity getProductVariant() {
-        return productVariant;
+    public ProductsEntity getProducts() {
+        return products;
     }
 
-    public void setProductVariant(ProductVariantEntity productVariant) {
-        this.productVariant = productVariant;
+    public void setProducts(ProductsEntity products) {
+        this.products = products;
     }
 }

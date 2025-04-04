@@ -5,6 +5,7 @@ import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ResponseObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import java.util.List;
 
 
 public interface ProductService {
@@ -12,5 +13,7 @@ public interface ProductService {
     ResponseObject<ProductDTO> findProductById (Long id);
     ResponseObject<ProductsEntity> saveOrUpdateProduct (ProductDTO productDTO);
     ResponseObject<Void> deleteProduct (Long id);
-
+    ResponseObject<List<ProductDTO>> findProductByDiscount();
+    ResponseObject<List<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice);
+    ResponseObject<List<ProductDTO>> findProductsSortedBy(String sortBy);
 }

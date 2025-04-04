@@ -1,8 +1,10 @@
+
+
 package com.javaweb.dto;
 
 import jakarta.validation.constraints.Size;
 
-public class UpdateProfileRequestDTO {
+public class UpdateUserRequestDTO {
     @Size(min = 1, max = 100, message = "Fullname must be between 1 and 100 characters")
     private String fullname;
 

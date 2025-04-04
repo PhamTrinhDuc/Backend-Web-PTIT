@@ -8,7 +8,14 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
+    List<ProductsEntity> findByCategorySlug(String categorySlug);
     boolean existsByName(String name);
-    @Query("SELECT p FROM ProductsEntity p WHERE p.category.slug = :categorySlug")
-    List<ProductsEntity> findByCategorySlug(@Param("categorySlug") String categorySlug);
+
+    // Thêm các phương thức mới
+    List<ProductsEntity> findByDiscountGreaterThan(Double discount);
+    List<ProductsEntity> findByPriceBetween(Double minPrice, Double maxPrice);
+    List<ProductsEntity> findAllByOrderByPriceAsc();
+    List<ProductsEntity> findAllByOrderByPriceDesc();
+    List<ProductsEntity> findAllByOrderByNameAsc();
+    List<ProductsEntity> findAllByOrderByNameDesc();
 }

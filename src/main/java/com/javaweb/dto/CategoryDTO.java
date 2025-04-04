@@ -6,18 +6,16 @@ public class CategoryDTO {
     private Long id;
     private String slug;
     private String name;
-    private String description;
 
     private boolean isActive;
 
     public CategoryDTO() {
     }
 
-    public CategoryDTO(Long id, String slug, String name, String description, boolean isActive) {
+    public CategoryDTO(Long id, String slug, String name, boolean isActive) {
         this.id = id;
         this.slug = slug;
         this.name = name;
-        this.description = description;
         this.isActive = isActive;
     }
 
@@ -43,12 +41,6 @@ public class CategoryDTO {
 
     public void setName(String name) {
         this.name = name;
-    }
-    public String getDescription() {
-        return description;
-    }
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     @JsonProperty("isActive")

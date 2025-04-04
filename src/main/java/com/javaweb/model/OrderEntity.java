@@ -38,6 +38,14 @@ public class OrderEntity {
         this.id = id;
     }
 
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
+
     public LocalDateTime getOrderDate() {
         return order_date;
     }
@@ -62,43 +70,19 @@ public class OrderEntity {
         this.status = status;
     }
 
+    public String getPayment_method() {
+        return payment_method;
+    }
+
+    public void setPayment_method(String payment_method) {
+        this.payment_method = payment_method;
+    }
+
     public List<OrderDetailEntity> getOrderDetails() {
         return orderDetails;
     }
 
     public void setOrderDetails(List<OrderDetailEntity> orderDetails) {
         this.orderDetails = orderDetails;
-    }
-
-    public UserEntity getUserEntity() {
-        return user;
-    }
-
-    public void setUserEntity(UserEntity userEntity) {
-        this.user= userEntity;
-    }
-
-    public LocalDateTime getOrder_date() {
-        return order_date;
-    }
-
-    public void setOrder_date(LocalDateTime order_date) {
-        this.order_date = order_date;
-    }
-
-    public String getPaymentMethod() {
-        return payment_method;
-    }
-
-    public void setPaymentMethod(String payment_method) {
-        this.payment_method = payment_method;
-    }
-
-    public UserEntity getUser() {
-        return user;
-    }
-
-    public void setUser(UserEntity user) {
-        this.user = user;
     }
 }

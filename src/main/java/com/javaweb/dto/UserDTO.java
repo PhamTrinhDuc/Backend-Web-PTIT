@@ -1,51 +1,45 @@
 package com.javaweb.dto;
 
 import com.javaweb.model.UserEntity;
-import com.javaweb.model.UserProfileEntity;
-
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
-
 
 public class UserDTO {
-    private Long id;
+
+    private int id;
     private String username;
-    private String email;
     private String role;
+    private String email;
     private String fullname;
-    private String phone_number;
     private String avatar;
-    private String birthday;
     private String gender;
     private String address;
+    private String birthday;
     private String status;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String phoneNumber;
 
+    // Default constructor
+    public UserDTO() {}
+
+    // Constructor to map from UserEntity
     public UserDTO(UserEntity user) {
         this.id = user.getId();
         this.username = user.getUsername();
-        this.email = user.getEmail();
         this.role = user.getRole();
-        UserProfileEntity userProfile = user.getUserProfile();
-        if (userProfile != null) {
-            this.fullname = userProfile.getFullname();
-            this.phone_number = userProfile.getPhone();
-            this.avatar = userProfile.getAvatar();
-            this.birthday = userProfile.getBirthday();
-            this.gender = userProfile.getGender();
-            this.address = userProfile.getAddress();
-            this.status = userProfile.getStatus();
-            this.createdAt = userProfile.getCreatedAt();
-            this.updatedAt = userProfile.getUpdatedAt();
-        }
+        this.email = user.getEmail();
+        this.fullname = user.getFullname();
+        this.avatar = user.getAvatar();
+        this.gender = user.getGender();
+        this.address = user.getAddress();
+        this.birthday = user.getBirthday();
+        this.status = user.getStatus();
+        this.phoneNumber = user.getPhoneNumber();
     }
 
-    public Long getId() {
+    // Getters and Setters
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -57,12 +51,12 @@ public class UserDTO {
         this.username = username;
     }
 
-    public String getPhoneNumber() {
-        return phone_number;
+    public String getRole() {
+        return role;
     }
 
-    public void setPhoneNumber(String phone_number) {
-        this.phone_number = phone_number;
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getEmail() {
@@ -71,14 +65,6 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public String getFullname() {
@@ -97,14 +83,6 @@ public class UserDTO {
         this.avatar = avatar;
     }
 
-    public String getBirthday() {
-        return birthday;
-    }
-
-    public void setBirthday(String birthday) {
-        this.birthday = birthday;
-    }
-
     public String getGender() {
         return gender;
     }
@@ -121,6 +99,14 @@ public class UserDTO {
         this.address = address;
     }
 
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -129,19 +115,11 @@ public class UserDTO {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

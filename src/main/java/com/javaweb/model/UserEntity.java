@@ -1,17 +1,15 @@
 package com.javaweb.model;
 
-
 import jakarta.persistence.*;
-import java.util.List;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private int id;
 
     @Column(name = "username")
     private String username;
@@ -19,46 +17,65 @@ public class UserEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "email")
-    private String email;
-
     @Column(name = "role")
     private String role;
 
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "fullname")
+    private String fullname;
+
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "address")
+    private String address;
+
+    @Column(name = "birthday")
+    private String birthday;
+
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "phone_number")
+    private String phoneNumber;
+
     @Column(name = "created_at")
-    private java.sql.Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private java.sql.Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private UserProfileEntity userProfile;
+    // Constructors
+    public UserEntity() {}
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<OrderEntity> order_entity;
-
-    public long getId() {
+    // Getters and Setters
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public Timestamp getUpdatedAt() {
-        return updatedAt;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUpdatedAt(Timestamp updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public String getPassword() {
+        return password;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {
@@ -77,28 +94,75 @@ public class UserEntity {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getFullname() {
+        return fullname;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setFullname(String fullname) {
+        this.fullname = fullname;
     }
 
-    public String getUsername() {
-        return username;
+    public String getAvatar() {
+        return avatar;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 
-    public UserProfileEntity getUserProfile() {
-        return userProfile;
+    public String getGender() {
+        return gender;
     }
 
-    public void setUserProfile(UserProfileEntity userProfile) {
-        this.userProfile = userProfile;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }

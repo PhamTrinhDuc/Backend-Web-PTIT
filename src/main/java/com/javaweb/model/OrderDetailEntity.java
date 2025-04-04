@@ -25,8 +25,8 @@ public class OrderDetailEntity {
     private OrderEntity order;
 
     @ManyToOne
-    @JoinColumn(name = "variant_id", nullable = false)
-    private ProductVariantEntity product_variant;
+    @JoinColumn(name = "product_id", nullable = false)
+    private ProductsEntity products;
 
     public long getId() {
         return id;
@@ -68,11 +68,11 @@ public class OrderDetailEntity {
         this.order = order;
     }
 
-    public ProductVariantEntity getProductVariant() {
-        return product_variant;
+    public ProductsEntity getProducts() {
+        return products;
     }
 
-    public void setProductVariant(ProductVariantEntity product_variant) {
-        this.product_variant = product_variant;
+    public void setProducts(ProductsEntity products) {
+        this.products = products;
     }
 }
