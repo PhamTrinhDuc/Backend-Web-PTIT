@@ -144,27 +144,46 @@ public class ProductServiceImpl implements ProductService {
 
     public ResponseObject<List<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice) {
         try {
-            if (minPrice == null || maxPrice == null || minPrice > maxPrice) {
-                return ResponseObject.error("Invalid price range", HttpStatus.BAD_REQUEST);
+            List<ProductsEntity> products;
+
+            if (minPrice != null && maxPrice != null) {
+                if (minPrice > maxPrice) {
+                    return ResponseObject.error("Invalid price range", HttpStatus.BAD_REQUEST);
+                }
+                products = productRepository.findByPriceBetween(minPrice, maxPrice);
+
+            } else if (minPrice != null) {
+                products = productRepository.findByPriceGreaterThanEqual(minPrice);
+
+            } else if (maxPrice != null) {
+                products = productRepository.findByPriceLessThanEqual(maxPrice);
+
+            } else {
+                return ResponseObject.error("Price range must be specified", HttpStatus.BAD_REQUEST);
             }
-            List<ProductsEntity> products = productRepository.findByPriceBetween(minPrice, maxPrice);
+
             if (products.isEmpty()) {
                 return ResponseObject.error("No products found in price range", HttpStatus.NOT_FOUND);
             }
+
             List<ProductDTO> productDTO = products.stream()
                     .map(product -> modelMapper.map(product, ProductDTO.class))
                     .collect(Collectors.toList());
             return ResponseObject.success(productDTO);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.error("Failed to fetch products by price range", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
     public ResponseObject<List<ProductDTO>> findProductsSortedBy(String sortBy) {
         try {
             List<ProductsEntity> products;
             switch (sortBy.toLowerCase()) {
+                case "newest":
+                    products = productRepository.findAllByOrderByCreatedAtDesc();
                 case "price_asc":
                     products = productRepository.findAllByOrderByPriceAsc();
                     break;
@@ -242,6 +261,27 @@ public class ProductServiceImpl implements ProductService {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.error("Failed to create new product: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public ResponseObject<List<ProductDTO>> findProductsByName(String keyword) {
+        try {
+            // Tìm kiếm sản phẩm trong database, không phân biệt hoa thường
+            List<ProductsEntity> products = productRepository.findByNameContainingIgnoreCase(keyword);
+
+            // Chuyển đổi từ ProductsEntity sang ProductDTO
+            List<ProductDTO> productDTO = products.stream()
+                    .map(product -> new ProductDTO(product)) // Giả sử ProductDTO có constructor này
+                    .collect(Collectors.toList());
+
+            return ResponseObject.success(productDTO);
+        } catch (NotFoundException e) {
+        return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (Exception e) {
+            return ResponseObject.error(
+                    "Error while searching products: " + e.getMessage(),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 

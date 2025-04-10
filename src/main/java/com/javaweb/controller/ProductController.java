@@ -31,10 +31,16 @@ public class ProductController {
             @RequestParam(defaultValue = "12") int size
     ) {
         Pageable pageable = PageRequest.of(page, size);
-        // Gọi service với pageable để hỗ trợ phân trang
         ResponseObject<Page<ProductDTO>> products = productService.findAllProducts(pageable);
 
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ResponseObject<List<ProductDTO>>> searchProductsByName(
+            @RequestParam String keyword) {
+        ResponseObject<List<ProductDTO>> response = productService.findProductsByName(keyword);
+        return new ResponseEntity<>(response, response.getStatus());
     }
 
     @GetMapping("/by-discount")
@@ -61,7 +67,7 @@ public class ProductController {
     @GetMapping("/filter/price")
     public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByPriceRange(
             @RequestParam Double minPrice,
-            @RequestParam Double maxPrice,
+            @RequestParam(required = false) Double maxPrice,
             @RequestParam(required = false) String categorySlug) {
         ResponseObject<List<ProductDTO>> response = productService.findProductByPriceRange(minPrice, maxPrice);
         return new ResponseEntity<>(response, response.getStatus());
@@ -80,4 +86,6 @@ public class ProductController {
         ResponseObject<ProductsEntity> response = productService.createNewProduct(productDTO);
         return new ResponseEntity<>(response, response.getStatus());
     }
+
+
 }

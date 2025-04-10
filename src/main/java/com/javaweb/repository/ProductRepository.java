@@ -12,10 +12,14 @@ public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
     boolean existsByName(String name);
 
     // Thêm các phương thức mới
+    List<ProductsEntity> findAllByOrderByCreatedAtDesc();
     List<ProductsEntity> findByDiscountGreaterThan(Double discount);
     List<ProductsEntity> findByPriceBetween(Double minPrice, Double maxPrice);
     List<ProductsEntity> findAllByOrderByPriceAsc();
     List<ProductsEntity> findAllByOrderByPriceDesc();
+    List<ProductsEntity> findByPriceGreaterThanEqual(Double minPrice);
+    List<ProductsEntity> findByPriceLessThanEqual(Double maxPrice);
     List<ProductsEntity> findAllByOrderByNameAsc();
     List<ProductsEntity> findAllByOrderByNameDesc();
+    List<ProductsEntity> findByNameContainingIgnoreCase(String keyword);
 }

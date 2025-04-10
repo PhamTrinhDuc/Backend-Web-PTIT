@@ -36,10 +36,10 @@ public class ProductsEntity {
     private int quantity_stock;
 
     @Column(name = "created")
-    private java.sql.Timestamp created;
+    private java.sql.Timestamp createdAt;
 
     @Column(name = "updated")
-    private java.sql.Timestamp updated;
+    private java.sql.Timestamp updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
@@ -105,19 +105,19 @@ public class ProductsEntity {
     }
 
     public Timestamp getCreated() {
-        return created;
+        return createdAt;
     }
 
-    public void setCreated(Timestamp created) {
-        this.created = created;
+    public void setCreated(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 
     public Timestamp getUpdated() {
-        return updated;
+        return updatedAt;
     }
 
-    public void setUpdated(Timestamp updated) {
-        this.updated = updated;
+    public void setUpdated(Timestamp updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public CategoryEntity getCategory() {
