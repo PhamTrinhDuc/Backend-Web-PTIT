@@ -1,6 +1,7 @@
 package com.javaweb.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +23,7 @@ public class OrderDetailEntity {
 
     @ManyToOne
     @JoinColumn(name = "order_id", nullable = false)
+    @JsonIgnore
     private OrderEntity order;
 
     @ManyToOne
@@ -68,9 +70,7 @@ public class OrderDetailEntity {
         this.order = order;
     }
 
-    public ProductsEntity getProducts() {
-        return products;
-    }
+    public ProductsEntity getProducts() {return products;}
 
     public void setProducts(ProductsEntity products) {
         this.products = products;

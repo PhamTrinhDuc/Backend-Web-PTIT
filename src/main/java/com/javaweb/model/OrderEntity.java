@@ -1,4 +1,5 @@
 package com.javaweb.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +22,7 @@ public class OrderEntity {
     private String status;
 
     @Column(name = "payment_method")
-    private String payment_method;
+    private String paymentMethod;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderDetailEntity> orderDetails;
@@ -70,12 +71,12 @@ public class OrderEntity {
         this.status = status;
     }
 
-    public String getPayment_method() {
-        return payment_method;
+    public String getPaymentMethod() {
+        return paymentMethod;
     }
 
-    public void setPayment_method(String payment_method) {
-        this.payment_method = payment_method;
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public List<OrderDetailEntity> getOrderDetails() {

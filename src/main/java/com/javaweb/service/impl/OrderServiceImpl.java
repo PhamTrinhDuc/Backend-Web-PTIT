@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
     private ProductRepository productRepository;
 
     @Transactional
-    public OrderEntity createOrder(OrderDTO orderDTO){
+    public OrderEntity createOrder(OrderDTO orderDTO) {
         // 1. Lấy thông tin người dùng
         UserEntity user = userRepository.findById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found: " + orderDTO.getUserId()));
@@ -41,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
         order.setTotalAmount(0.0);
+        order.setPaymentMethod(orderDTO.getPaymentMethod()); // Thêm payment method từ DTO
 
         // 3. Kiểm tra và cập nhật số lượng tồn kho
         List<OrderDetailEntity> orderDetails = new ArrayList<>();
@@ -49,42 +50,37 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetailDTO itemDTO : orderDTO.getItems()) {
             ProductsEntity product = productRepository
                     .findById(itemDTO.getProductId())
-                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemDTO.getProductId()));
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
 
             // Kiểm tra số lượng trong kho
             if (product.getQuantityStock() < itemDTO.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product variant: " + itemDTO.getProductId() +
+                throw new RuntimeException("Not enough stock for product: " + itemDTO.getProductId() +
                         ". Available: " + product.getQuantityStock() + ", Requested: " + itemDTO.getQuantity());
             }
 
             // Giảm số lượng trong kho
             product.setQuantityStock(product.getQuantityStock() - itemDTO.getQuantity());
-
-            // Lưu lại sản phẩm đã thay đổi số lượng
-            productRepository.save(product);  // Đảm bảo gọi từ productRepository đã được inject
+            productRepository.save(product); // Lưu lại sản phẩm đã thay đổi số lượng
 
             // Tạo chi tiết đơn hàng
             OrderDetailEntity orderDetail = new OrderDetailEntity();
             orderDetail.setOrder(order);
+            orderDetail.setProducts(product); // Gán ProductsEntity vào orderDetail
             orderDetail.setQuantity(itemDTO.getQuantity());
             orderDetail.setUnitPrice(product.getPrice());
+            orderDetail.setDiscount(itemDTO.getDiscount()); // Thêm discount từ DTO nếu có
             orderDetails.add(orderDetail);
 
             // Cộng dồn tổng số tiền
-            totalAmount += (product.getPrice() * itemDTO.getQuantity());
+            totalAmount += (product.getPrice() * itemDTO.getQuantity()) * (1 - itemDTO.getDiscount() / 100); // Tính discount nếu có
         }
-
         // 4. Cập nhật tổng số tiền cho đơn hàng
         order.setTotalAmount(totalAmount);
-
         // 5. Gán danh sách chi tiết đơn hàng vào đơn hàng
         order.setOrderDetails(orderDetails);
-
         // 6. Lưu đơn hàng
         OrderEntity savedOrder = orderRepository.save(order);
-
         // 7. Cập nhật trạng thái đơn hàng
-        savedOrder.setStatus("COMPLETED");
         return orderRepository.save(savedOrder);
     }
 
