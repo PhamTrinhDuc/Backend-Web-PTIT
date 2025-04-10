@@ -17,6 +17,7 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderRequestDTO) {
+        System.out.println("order body: " + orderRequestDTO);
         try {
             OrderEntity order = orderService.createOrder(orderRequestDTO);
             return ResponseEntity.ok(order);

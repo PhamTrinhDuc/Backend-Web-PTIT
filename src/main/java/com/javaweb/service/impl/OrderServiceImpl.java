@@ -48,12 +48,12 @@ public class OrderServiceImpl implements OrderService {
 
         for (OrderDetailDTO itemDTO : orderDTO.getItems()) {
             ProductsEntity product = productRepository
-                    .findById(itemDTO.getId())
-                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemDTO.getId()));
+                    .findById(itemDTO.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + itemDTO.getProductId()));
 
             // Kiểm tra số lượng trong kho
             if (product.getQuantityStock() < itemDTO.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product variant: " + itemDTO.getId() +
+                throw new RuntimeException("Not enough stock for product variant: " + itemDTO.getProductId() +
                         ". Available: " + product.getQuantityStock() + ", Requested: " + itemDTO.getQuantity());
             }
 

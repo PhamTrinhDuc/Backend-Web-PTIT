@@ -11,6 +11,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/users")
@@ -19,6 +21,19 @@ public class UserController {
 
     @Autowired
     private UserServiceImpl userService;
+
+    @GetMapping
+    public ResponseEntity<?> getAllUsers() {
+        try {
+            List<UserEntity> users = userService.getAllUsers();
+            List<UserDTO> userDTOs = users.stream()
+                    .map(UserDTO::new)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(userDTOs);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 
     @PutMapping("/me/profile")
     public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserRequestDTO request,

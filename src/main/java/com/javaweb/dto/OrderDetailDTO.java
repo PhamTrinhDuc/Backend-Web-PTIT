@@ -1,43 +1,41 @@
 package com.javaweb.dto;
 
 public class OrderDetailDTO {
-    private Long id;
-    private Integer quantity;
-    private Double price;
-    private Double discount;
+    private Long productId;
+    private int quantity;
+    private double price;
+    private double discount;
 
-    public OrderDetailDTO() {
+    // Getters và Setters
+    public Long getProductId() {
+        return productId;
     }
 
-    public Long getId() {
-        return id;
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
-    }
-
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public Integer getQuantity() {
+    public int getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(double discount) {
+        this.discount = discount;
     }
 }

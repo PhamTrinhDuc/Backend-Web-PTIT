@@ -25,42 +25,39 @@ import java.util.Optional;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final UserServiceImpl userDetailsService;
+    private final UserServiceImpl userService;
 
-    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserServiceImpl userDetailsService) {
+    public JwtAuthenticationFilter(JwtTokenProvider jwtTokenProvider, UserServiceImpl userService) {
         this.jwtTokenProvider = jwtTokenProvider;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String jwt = getJwtFromRequest(request);
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("JWT: " + jwt);
 
         if (jwt != null && jwtTokenProvider.validateToken(jwt)) {
             String username = jwtTokenProvider.getUsernameFromToken(jwt);
-            Optional<UserEntity> userOptional = userDetailsService.findByUsername(username);
-
+            System.out.println("Username: " + username);
+            Optional<UserEntity> userOptional = userService.findByUsername(username);
             if (userOptional.isPresent()) {
                 UserEntity userEntity = userOptional.get();
-
-                // Tạo UserDetails từ UserEntity
                 UserDetails userDetails = new User(
                         userEntity.getUsername(),
-                        userEntity.getPassword(), // Có thể để "" nếu không cần password ở đây
-                        getAuthorities(userEntity) // Chuyển đổi role thành authorities
+                        userEntity.getPassword(),
+                        getAuthorities(userEntity)
                 );
-
-                // Tạo UsernamePasswordAuthenticationToken
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-                // Đặt Authentication vào SecurityContextHolder
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+        } else {
+            System.out.println("No valid JWT, proceeding to next filter");
         }
-
         filterChain.doFilter(request, response);
     }
 
