@@ -1,5 +1,6 @@
 package com.javaweb.controller;
 
+import com.javaweb.dto.AddProductRequestDTO;
 import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ProductsEntity;
 import com.javaweb.model.ResponseObject;
@@ -10,6 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -54,7 +58,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.findProductById(id));
     }
 
-    @PostMapping
+    @PostMapping("/update")
     public ResponseEntity<ResponseObject<ProductsEntity>> saveOrUpdate(@RequestBody ProductDTO productDTO) {
         return ResponseEntity.ok(productService.saveOrUpdateProduct(productDTO));
     }
@@ -82,10 +86,8 @@ public class ProductController {
     }
 
     @PostMapping("/new-product")
-    public ResponseEntity<ResponseObject<ProductsEntity>> createNewProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ResponseObject<ProductsEntity>> createNewProduct(@RequestBody AddProductRequestDTO productDTO) {
         ResponseObject<ProductsEntity> response = productService.createNewProduct(productDTO);
         return new ResponseEntity<>(response, response.getStatus());
     }
-
-
 }

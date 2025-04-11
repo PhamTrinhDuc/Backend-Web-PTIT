@@ -48,6 +48,10 @@ public class ProductsEntity {
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductImageEntity> imagePaths;
 
+    // Quan hệ nhiều-nhiều với Supplier
+    @ManyToMany(mappedBy = "products")
+    private List<SupplierEntity> suppliers;
+
     public long getId() {
         return id;
     }
@@ -134,5 +138,13 @@ public class ProductsEntity {
 
     public void setProductImageEntities(List<ProductImageEntity> imagePaths) {
         this.imagePaths = imagePaths;
+    }
+
+    public List<SupplierEntity> getSuppliers() {
+        return suppliers;
+    }
+
+    public void setSuppliers(List<SupplierEntity> suppliers) {
+        this.suppliers = suppliers;
     }
 }
