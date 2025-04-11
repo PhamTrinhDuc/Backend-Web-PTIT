@@ -1,10 +1,15 @@
 package com.javaweb.config;
 
+import com.javaweb.dto.OrderDTO;
+import com.javaweb.dto.OrderDetailDTO;
+import com.javaweb.model.OrderDetailEntity;
+import com.javaweb.model.OrderEntity;
 import com.javaweb.model.ProductImageEntity;
 import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ProductsEntity;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Configuration
 public class MapperConfig {
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
@@ -34,6 +38,21 @@ public class MapperConfig {
                 .addMappings(mapper -> mapper.using(imagePathConverter)
                         .map(ProductsEntity::getProductImageEntities, ProductDTO::setImagePaths));
 
+
+        // Mapping OrderDetailEntity -> OrderDetailDTO
+        modelMapper.createTypeMap(OrderDetailEntity.class, OrderDetailDTO.class)
+                .addMappings(mapper -> {
+                    mapper.map(src -> src.getProducts().getId(), OrderDetailDTO::setProductId);
+                    mapper.map(src -> src.getProducts().getName(), OrderDetailDTO::setProductName);
+                });
+
+        // Mapping OrderEntity -> OrderDTO
+        modelMapper.createTypeMap(OrderEntity.class, OrderDTO.class)
+                .addMappings(mapper -> {
+                    mapper.map(src -> src.getUser().getId(), OrderDTO::setUserId);
+                    mapper.map(OrderEntity::getOrderDetails, OrderDTO::setItems);
+                    mapper.map(OrderEntity::getPaymentMethod, OrderDTO::setPaymentMethod);
+                });
         return modelMapper;
     }
 }

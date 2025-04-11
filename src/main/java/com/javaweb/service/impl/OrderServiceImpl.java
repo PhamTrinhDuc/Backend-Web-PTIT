@@ -8,14 +8,21 @@ import com.javaweb.service.OrderService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.modelmapper.ModelMapper;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
 public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private ModelMapper modelMapper; // Inject ModelMapper
 
     @Autowired
     private OrderRepository orderRepository;
@@ -29,6 +36,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private ProductRepository productRepository;
 
+    // tạo đơn hàng mới
     @Transactional
     public OrderEntity createOrder(OrderDTO orderDTO) {
         // 1. Lấy thông tin người dùng
@@ -92,7 +100,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
         // 2. Kiểm tra trạng thái đơn hàng
-        if (!order.getStatus().equals("PENDING")) { // đơn đang được giao mới được hủy
+        if (order.getStatus().equals("SHIPPED") || order.getStatus().equals("DELIVERED") ) { // đơn đang được giao mới được hủy
             throw new RuntimeException("Cannot cancel order with status: " + order.getStatus());
         }
 
@@ -114,5 +122,27 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus("CANCELLED");
         return orderRepository.save(order);
+    }
+
+    @Override
+    public List<OrderDTO> getAllOrders(Long id) {
+        List<OrderEntity> orders = orderRepository.findByUser_Id(id);
+
+        List<OrderDTO> orderDTO =  orders.stream()
+                .map(order -> modelMapper.map(order, OrderDTO.class))
+                .collect(Collectors.toList());
+        return orderDTO;
+    }
+
+    @Transactional
+    public OrderDTO updateOrder(Long id, String status ){
+        Optional<OrderEntity> orderEntity = orderRepository.findById(id);
+        if (orderEntity.isEmpty()) {
+            throw new RuntimeException("Order not found with id: " + id);
+        }
+        OrderEntity order = orderEntity.get();
+        order.setStatus(status); // Cập nhật status mới
+        orderRepository.save(order); // Lưu lại thay đổi
+        return modelMapper.map(order, OrderDTO.class); // Convert sang DTO nếu cần trả về
     }
 }

@@ -2,9 +2,11 @@ package com.javaweb.dto;
 
 import com.javaweb.model.UserEntity;
 
+import java.time.LocalDateTime;
+
 public class UserDTO {
 
-    private int id;
+    private Integer id;
     private String username;
     private String role;
     private String email;
@@ -15,6 +17,7 @@ public class UserDTO {
     private String birthday;
     private String status;
     private String phoneNumber;
+    private LocalDateTime createdAt;
 
     // Default constructor
     public UserDTO() {}
@@ -32,6 +35,7 @@ public class UserDTO {
         this.birthday = user.getBirthday();
         this.status = user.getStatus();
         this.phoneNumber = user.getPhoneNumber();
+        this.createdAt = user.getCreatedAt();
     }
 
     // Getters and Setters
@@ -121,5 +125,13 @@ public class UserDTO {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 }
