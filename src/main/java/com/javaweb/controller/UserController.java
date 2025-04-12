@@ -35,12 +35,11 @@ public class UserController {
         }
     }
 
-    @PutMapping("/me/profile")
-    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserRequestDTO request,
-                                           Authentication authentication) {
+    @PostMapping("/me/profile")
+    public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserRequestDTO request) {
         try{
-            String username = authentication.getName();
-            UserEntity user = userService.updateProfile(username, request);
+            Long id = request.getId();
+            UserEntity user = userService.updateProfile(id, request);
             UserDTO userDTO = new UserDTO(user);
             return ResponseEntity.ok(userDTO);
         }

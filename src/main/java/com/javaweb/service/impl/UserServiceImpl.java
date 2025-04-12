@@ -67,15 +67,15 @@ public class UserServiceImpl implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public UserEntity updateProfile(String userName, UpdateUserRequestDTO request) {
-        UserEntity user = userRepository.findByUsername(userName)
+    public UserEntity updateProfile(Long id, UpdateUserRequestDTO request) {
+        UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if ("inactive".equals(user.getStatus())) {
             throw new RuntimeException("Account is inactive");
         }
-        if (request.getFullname() != null) user.setFullname(request.getFullname());
-        if (request.getAvatar() != null) user.setAvatar(request.getAvatar());
-        if (request.getBirthday() != null) user.setBirthday(request.getBirthday());
+        if (request.getFullName() != null) user.setFullname(request.getFullName());
+        if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
+        if (request.getGender() != null) user.setGender(request.getGender());
         if (request.getGender() != null) user.setGender(request.getGender());
         if (request.getAddress() != null) user.setAddress(request.getAddress());
         user.setUpdatedAt(LocalDateTime.now());
