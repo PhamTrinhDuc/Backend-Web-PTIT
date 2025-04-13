@@ -8,6 +8,7 @@ import org.hibernate.annotations.Type;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @Entity
 @Table(name="product")
@@ -48,9 +49,10 @@ public class ProductsEntity {
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductImageEntity> imagePaths;
 
-    // Quan hệ nhiều-nhiều với Supplier
-    @ManyToMany(mappedBy = "products")
-    private List<SupplierEntity> suppliers;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id", nullable = false)
+    private SupplierEntity supplier;
 
     public long getId() {
         return id;
@@ -140,11 +142,11 @@ public class ProductsEntity {
         this.imagePaths = imagePaths;
     }
 
-    public List<SupplierEntity> getSuppliers() {
-        return suppliers;
+    public SupplierEntity getSupplier(){
+        return this.supplier;
     }
 
-    public void setSuppliers(List<SupplierEntity> suppliers) {
-        this.suppliers = suppliers;
+    public void setSupplier(SupplierEntity supplier) {
+        this.supplier = supplier;
     }
 }

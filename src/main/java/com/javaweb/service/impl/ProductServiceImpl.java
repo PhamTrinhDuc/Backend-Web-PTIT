@@ -228,13 +228,11 @@ public class ProductServiceImpl implements ProductService {
 
             // Kiểm tra supplier
             String supplierName = productDTO.getSupplier();
-            List<SupplierEntity> suppliers;
             if (supplierName == null || supplierName.trim().isEmpty()) {
                 return ResponseObject.error("Supplier is required", HttpStatus.BAD_REQUEST);
             }
             SupplierEntity supplier = supplierRepository.findByName(supplierName)
                     .orElseThrow(() -> new NotFoundException("Supplier not found with name: " + supplierName));
-            suppliers = Collections.singletonList(supplier); // Gán một nhà cung cấp duy nhất
 
             // Tạo ProductsEntity
             ProductsEntity newProduct = new ProductsEntity();
@@ -244,7 +242,7 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setDiscount(productDTO.getDiscount() != null ? productDTO.getDiscount() : 0.0);
             newProduct.setQuantityStock(productDTO.getQuantityStock() != null ? productDTO.getQuantityStock() : 0);
             newProduct.setCategory(category);
-            newProduct.setSuppliers(suppliers);
+            newProduct.setSupplier(supplier);
 
             // Xử lý danh sách ảnh
             List<String> imageUrls = productDTO.getImagePaths();
@@ -260,7 +258,6 @@ public class ProductServiceImpl implements ProductService {
                         .collect(Collectors.toList());
                 newProduct.setProductImageEntities(imageEntities);
             }
-
             // Xử lý specification
             if (productDTO.getSpecification() != null && !productDTO.getSpecification().isEmpty()) {
                 newProduct.setSpecification(productDTO.getSpecification());

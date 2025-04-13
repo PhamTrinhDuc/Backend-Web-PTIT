@@ -25,12 +25,7 @@ public class SupplierEntity {
     private boolean isActive;
 
     // Quan hệ nhiều-nhiều với Product
-    @ManyToMany
-    @JoinTable(
-            name = "supplier_product", // Tên bảng trung gian
-            joinColumns = @JoinColumn(name = "supplier_id"), // Khóa ngoại từ Supplier
-            inverseJoinColumns = @JoinColumn(name = "product_id") // Khóa ngoại từ Product
-    )
+    @OneToMany(mappedBy = "supplier", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProductsEntity> products;
 
     // Constructors
