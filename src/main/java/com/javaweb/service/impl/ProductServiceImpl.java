@@ -1,6 +1,7 @@
 package com.javaweb.service.impl;
 
 import com.javaweb.dto.ProductDTO;
+import com.javaweb.dto.UpdateProductRequestDTO;
 import com.javaweb.exception.NotFoundException;
 import com.javaweb.model.*;
 import com.javaweb.repository.SupplierRespository;
@@ -117,26 +118,87 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<ProductsEntity> saveOrUpdateProduct(ProductDTO productDTO){
-        try{
-            Long id = productDTO.getId();
-            if (id == null && productRepository.existsByName(productDTO.getName())) {
-                return ResponseObject.error("Product already exists", HttpStatus.BAD_REQUEST);
+    public ResponseObject<ProductsEntity> updateProduct(UpdateProductRequestDTO productDTO) {
+        try {
+            // Kiểm tra product tồn tại
+            Long id = productDTO.getProductId();
+            ProductsEntity existingProduct = productRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Product not found with id: " + id));
+
+            // Kiểm tra tên sản phẩm (nếu đổi tên)
+            if (productDTO.getProductName() != null && !productDTO.getProductName().trim().isEmpty()) {
+                if (!existingProduct.getName().equals(productDTO.getProductName()) &&
+                        productRepository.existsByName(productDTO.getProductName())) {
+                    return ResponseObject.error("Product with name '" + productDTO.getProductName() + "' already exists", HttpStatus.BAD_REQUEST);
+                }
+                existingProduct.setName(productDTO.getProductName());
             }
 
-            ProductsEntity productsEntity;
-            if(id!= null){
-                productsEntity = productRepository.findById(id)
-                        .orElse(new ProductsEntity());
-            } else {
-                productsEntity = new ProductsEntity();
+            // Cập nhật description
+            existingProduct.setDescription(productDTO.getDescription());
+
+            // Cập nhật giá
+            if (productDTO.getPrice() != null) {
+                existingProduct.setPrice(productDTO.getPrice());
             }
-            productsEntity = modelMapper.map(productDTO, ProductsEntity.class);
-            productRepository.save(productsEntity);
-            return ResponseObject.success(productsEntity);
+
+            // Cập nhật discount
+            if (productDTO.getDiscount() != null) {
+                existingProduct.setDiscount(Math.max(0.0, productDTO.getDiscount()));
+            }
+
+            // Cập nhật quantity
+            if (productDTO.getQuantityStock() != null) {
+                existingProduct.setQuantityStock(Math.max(0, productDTO.getQuantityStock()));
+            }
+
+            // Cập nhật category (nếu thay đổi)
+            if (productDTO.getCategory() != null && !productDTO.getCategory().trim().isEmpty()) {
+                CategoryEntity category = categoryRepository.findBySlug(productDTO.getCategory())
+                        .orElseThrow(() -> new NotFoundException("Category not found with slug: " + productDTO.getCategory()));
+                existingProduct.setCategory(category);
+            }
+
+            // Cập nhật supplier (nếu thay đổi)
+            if (productDTO.getSupplier() != null && !productDTO.getSupplier().trim().isEmpty()) {
+                SupplierEntity supplier = supplierRepository.findByName(productDTO.getSupplier())
+                        .orElseThrow(() -> new NotFoundException("Supplier not found with name: " + productDTO.getSupplier()));
+                existingProduct.setSupplier(supplier);
+            }
+
+            // Cập nhật specification
+            if (productDTO.getSpecification() != null) {
+                existingProduct.setSpecification(productDTO.getSpecification());
+            }
+
+            // Cập nhật danh sách ảnh (xóa cũ, thêm mới)
+            if (productDTO.getImagePaths() != null) {
+                // Xóa danh sách ảnh cũ
+                existingProduct.getProductImageEntities().clear();
+
+                List<ProductImageEntity> newImages = productDTO.getImagePaths().stream()
+                        .filter(url -> url != null && !url.trim().isEmpty())
+                        .map(url -> {
+                            ProductImageEntity img = new ProductImageEntity();
+                            img.setImagePath(url);
+                            img.setProducts(existingProduct);
+                            return img;
+                        })
+                        .collect(Collectors.toList());
+                existingProduct.setProductImageEntities(newImages);
+            }
+
+            // Cập nhật thời gian
+            existingProduct.setUpdated(new Timestamp(System.currentTimeMillis()));
+
+            // Lưu lại
+            ProductsEntity saved = productRepository.save(existingProduct);
+            return ResponseObject.success(saved);
+        } catch (NotFoundException e) {
+            return ResponseObject.error(e.getMessage(), HttpStatus.NOT_FOUND);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseObject.error("Failed to save or update product", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseObject.error("Failed to update product: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

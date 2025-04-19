@@ -2,6 +2,7 @@ package com.javaweb.controller;
 
 import com.javaweb.dto.AddProductRequestDTO;
 import com.javaweb.dto.ProductDTO;
+import com.javaweb.dto.UpdateProductRequestDTO;
 import com.javaweb.model.ProductsEntity;
 import com.javaweb.model.ResponseObject;
 import com.javaweb.service.impl.ProductServiceImpl;
@@ -11,9 +12,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 
@@ -59,12 +57,12 @@ public class ProductController {
     }
 
     @PostMapping("/update")
-    public ResponseEntity<ResponseObject<ProductsEntity>> saveOrUpdate(@RequestBody ProductDTO productDTO) {
-        return ResponseEntity.ok(productService.saveOrUpdateProduct(productDTO));
+    public ResponseEntity<ResponseObject<ProductsEntity>> saveOrUpdate(@RequestBody UpdateProductRequestDTO productDTO) {
+        return ResponseEntity.ok(productService.updateProduct(productDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseObject<Void>> deleteProduct(@RequestParam Long id) {
+    public ResponseEntity<ResponseObject<Void>> deleteProduct(@PathVariable Long id) {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
 

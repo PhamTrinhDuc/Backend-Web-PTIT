@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.javaweb.mapper.CategoryMapper;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -64,23 +65,33 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public ResponseObject<CategoryEntity> saveOrUpdateCategory(CategoryDTO categoryDTO) {
         try {
-            Long id = categoryDTO.getId();
-            if (id == null && categoryRepository.existsByName(categoryDTO.getName())) {
-                return ResponseObject.error("Category already exists", HttpStatus.BAD_REQUEST);
+            String name = categoryDTO.getName();
+            String inputSlug = categoryDTO.getSlug();
+
+            if (name == null || name.trim().isEmpty()) {
+                return ResponseObject.error("Category name is required", HttpStatus.BAD_REQUEST);
             }
 
-            CategoryEntity categoryEntity;
-            if (categoryDTO.getId() != null) {
-                categoryEntity = categoryRepository.findById(categoryDTO.getId())
-                        .orElse(new CategoryEntity());
-            } else {
-                categoryEntity = new CategoryEntity();
+            // Tạo slug nếu admin không nhập
+            String slug = (inputSlug == null || inputSlug.trim().isEmpty())
+                    ? generateSlugFromName(name)
+                    : inputSlug.trim().toLowerCase();
+
+            // Tìm category theo slug
+            CategoryEntity categoryEntity = categoryRepository.findBySlug(slug)
+                    .orElse(new CategoryEntity());
+
+            // Nếu là tạo mới và slug đã tồn tại => lỗi
+            if (categoryEntity.getId() != null && inputSlug != null) {
+                return ResponseObject.error("Category with this slug already exists", HttpStatus.BAD_REQUEST);
             }
-            // Manual mapping from DTO to Entity
-            categoryEntity.setId(categoryDTO.getId());
-            categoryEntity.setName(categoryDTO.getName());
-            categoryEntity.setSlug(categoryDTO.getSlug());
-            // Map other fields
+
+            // Map thông tin
+            categoryEntity.setName(name);
+            categoryEntity.setSlug(slug);
+            categoryEntity.setIsActive(true);
+            // Map thêm fields khác nếu cần
+
             categoryRepository.save(categoryEntity);
             return ResponseObject.success(categoryEntity);
 
@@ -89,6 +100,14 @@ public class CategoryServiceImpl implements CategoryService {
             return ResponseObject.error("Failed to save or update category", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    private String generateSlugFromName(String name) {
+        return name.trim()
+                .toLowerCase()
+                .replaceAll("[^a-z0-9\\s]", "")  // Xóa ký tự đặc biệt
+                .replaceAll("\\s+", "-");       // Thay khoảng trắng bằng dấu -
+    }
+
 
     public ResponseObject<Void> deleteCategory(Long id) {
         if (id == null) {

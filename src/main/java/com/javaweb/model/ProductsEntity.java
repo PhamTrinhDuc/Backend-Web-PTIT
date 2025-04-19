@@ -49,7 +49,6 @@ public class ProductsEntity {
     @OneToMany(mappedBy = "products", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<ProductImageEntity> imagePaths;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id", nullable = false)
     private SupplierEntity supplier;

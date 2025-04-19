@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class ProductDTO {
-
     private Long id;
     private Long categoryId;
+    private Long supplierId;
     private String name;
     private Double price;
     private Integer quantityStock;
@@ -35,6 +35,7 @@ public class ProductDTO {
                 .map(ProductImageEntity::getImagePath)
                 .collect(Collectors.toList());
         this.categoryId = productsEntity.getCategory() != null ? productsEntity.getCategory().getId() : null; // Thêm categoryId
+        this.supplierId = productsEntity.getSupplier() != null ? productsEntity.getSupplier().getId() : null;
     }
 
     public Long getId() {
@@ -51,6 +52,14 @@ public class ProductDTO {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Long getSupplierId() {
+        return supplierId;
+    }
+
+    public void setSupplierId(Long supplierId) {
+        this.supplierId = supplierId;
     }
 
     public String getName() {

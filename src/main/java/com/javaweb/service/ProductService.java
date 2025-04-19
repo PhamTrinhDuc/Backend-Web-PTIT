@@ -1,5 +1,6 @@
 package com.javaweb.service;
 
+import com.javaweb.dto.UpdateProductRequestDTO;
 import com.javaweb.model.ProductsEntity;
 import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.ResponseObject;
@@ -11,7 +12,7 @@ import java.util.List;
 public interface ProductService {
     ResponseObject<Page<ProductDTO>> findAllProducts (Pageable pageable);
     ResponseObject<ProductDTO> findProductById (Long id);
-    ResponseObject<ProductsEntity> saveOrUpdateProduct (ProductDTO productDTO);
+    ResponseObject<ProductsEntity> updateProduct (UpdateProductRequestDTO productDTO);
     ResponseObject<Void> deleteProduct (Long id);
     ResponseObject<List<ProductDTO>> findProductByDiscount();
     ResponseObject<List<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice);
