@@ -1,5 +1,6 @@
 package com.javaweb.controller;
 
+import com.javaweb.dto.ChangePasswordRequest;
 import com.javaweb.dto.UpdateUserRequestDTO;
 import com.javaweb.dto.UserDTO;
 import com.javaweb.model.UserEntity;
@@ -38,8 +39,7 @@ public class UserController {
     @PostMapping("/me/profile")
     public ResponseEntity<?> updateProfile(@Valid @RequestBody UpdateUserRequestDTO request) {
         try{
-            Long id = request.getId();
-            UserEntity user = userService.updateProfile(id, request);
+            UserEntity user = userService.updateProfile(request);
             UserDTO userDTO = new UserDTO(user);
             return ResponseEntity.ok(userDTO);
         }
@@ -54,6 +54,16 @@ public class UserController {
             String username = authentication.getName();
             userService.deleteUser(username);
             return ResponseEntity.ok("Account deleted successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            userService.changePassword(request);
+            return ResponseEntity.ok("Password updated successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

@@ -1,5 +1,6 @@
 package com.javaweb.service.impl;
 
+import com.javaweb.dto.ChangePasswordRequest;
 import com.javaweb.dto.RegisterRequestDTO;
 import com.javaweb.dto.UpdateUserRequestDTO;
 import com.javaweb.model.UserEntity;
@@ -36,7 +37,6 @@ public class UserServiceImpl implements UserDetailsService {
         return userRepository.findAll();
     }
 
-
     public UserEntity registerUser(RegisterRequestDTO request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -66,8 +66,8 @@ public class UserServiceImpl implements UserDetailsService {
         return userRepository.findByUsername(username);
     }
 
-    public UserEntity updateProfile(Long id, UpdateUserRequestDTO request) {
-        UserEntity user = userRepository.findById(id)
+    public UserEntity updateProfile(UpdateUserRequestDTO request) {
+        UserEntity user = userRepository.findById(request.getId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
         if ("inactive".equals(user.getStatus())) {
             throw new RuntimeException("Account is inactive");
@@ -75,7 +75,8 @@ public class UserServiceImpl implements UserDetailsService {
         if (request.getFullName() != null) user.setFullname(request.getFullName());
         if (request.getPhoneNumber() != null) user.setPhoneNumber(request.getPhoneNumber());
         if (request.getGender() != null) user.setGender(request.getGender());
-        if (request.getGender() != null) user.setGender(request.getGender());
+        if (request.getBirthday() != null) user.setBirthday(request.getBirthday());
+        if (request.getEmail() != null)  user.setEmail(request.getEmail());
         if (request.getAddress() != null) user.setAddress(request.getAddress());
         user.setUpdatedAt(LocalDateTime.now());
         return userRepository.save(user);
@@ -86,6 +87,26 @@ public class UserServiceImpl implements UserDetailsService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus("inactive");
         user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public void changePassword(ChangePasswordRequest request) {
+        Long userId = request.getUserId();
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        // Kiểm tra mật khẩu hiện tại
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new RuntimeException("Current password is incorrect");
+        }
+
+        // Kiểm tra xác nhận mật khẩu
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new RuntimeException("New password and confirm password do not match");
+        }
+
+        // Cập nhật mật khẩu
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
     }
 }

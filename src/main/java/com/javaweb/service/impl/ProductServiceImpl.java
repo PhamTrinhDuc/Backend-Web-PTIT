@@ -154,8 +154,8 @@ public class ProductServiceImpl implements ProductService {
 
             // Cập nhật category (nếu thay đổi)
             if (productDTO.getCategory() != null && !productDTO.getCategory().trim().isEmpty()) {
-                CategoryEntity category = categoryRepository.findBySlug(productDTO.getCategory())
-                        .orElseThrow(() -> new NotFoundException("Category not found with slug: " + productDTO.getCategory()));
+                CategoryEntity category = categoryRepository.findByName(productDTO.getCategory())
+                        .orElseThrow(() -> new NotFoundException("Category not found with name: " + productDTO.getCategory()));
                 existingProduct.setCategory(category);
             }
 
@@ -171,22 +171,18 @@ public class ProductServiceImpl implements ProductService {
                 existingProduct.setSpecification(productDTO.getSpecification());
             }
 
-            // Cập nhật danh sách ảnh (xóa cũ, thêm mới)
-            if (productDTO.getImagePaths() != null) {
-                // Xóa danh sách ảnh cũ
-                existingProduct.getProductImageEntities().clear();
-
-                List<ProductImageEntity> newImages = productDTO.getImagePaths().stream()
-                        .filter(url -> url != null && !url.trim().isEmpty())
-                        .map(url -> {
-                            ProductImageEntity img = new ProductImageEntity();
-                            img.setImagePath(url);
-                            img.setProducts(existingProduct);
-                            return img;
-                        })
-                        .collect(Collectors.toList());
-                existingProduct.setProductImageEntities(newImages);
+            // Chỉ xử lý nếu có ảnh mới
+            if (productDTO.getImagePaths() != null && !productDTO.getImagePaths().isEmpty()) {
+                for (String url : productDTO.getImagePaths()) {
+                    if (url != null && !url.trim().isEmpty()) {
+                        ProductImageEntity img = new ProductImageEntity();
+                        img.setImagePath(url);
+                        img.setProducts(existingProduct);  // thiết lập quan hệ N-1
+                        existingProduct.getProductImageEntities().add(img);
+                    }
+                }
             }
+
 
             // Cập nhật thời gian
             existingProduct.setUpdated(new Timestamp(System.currentTimeMillis()));
