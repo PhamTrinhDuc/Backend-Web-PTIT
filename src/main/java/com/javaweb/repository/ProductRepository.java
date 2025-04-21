@@ -10,16 +10,25 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
 public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
-    Page<ProductsEntity> findByCategorySlug(String categorySlug, Pageable pageable);
+
+    @Query("SELECT p FROM ProductsEntity p " +
+            "WHERE (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
+    Page<ProductsEntity> findAll(Double minPrice, Double maxPrice, Pageable pageable);
+
+    @Query("SELECT p FROM ProductsEntity p WHERE p.category.slug = :categorySlug " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
+    Page<ProductsEntity> findByCategorySlug(String categorySlug, Double minPrice, Double maxPrice, Pageable pageable);
     boolean existsByName(String name);
     List<ProductsEntity> findAllByOrderByCreatedAtDesc();
-    List<ProductsEntity> findByDiscountGreaterThan(Double discount);
-    List<ProductsEntity> findByPriceBetween(Double minPrice, Double maxPrice);
+    Page<ProductsEntity> findByDiscountGreaterThan(Double discount, Pageable pageable);
+    Page<ProductsEntity> findByPriceBetween(Double min, Double max, Pageable pageable);
+    Page<ProductsEntity> findByPriceGreaterThanEqual(Double min, Pageable pageable);
+    Page<ProductsEntity> findByPriceLessThanEqual(Double max, Pageable pageable);
     List<ProductsEntity> findAllByOrderByPriceAsc();
     List<ProductsEntity> findAllByOrderByPriceDesc();
-    List<ProductsEntity> findByPriceGreaterThanEqual(Double minPrice);
-    List<ProductsEntity> findByPriceLessThanEqual(Double maxPrice);
     List<ProductsEntity> findAllByOrderByNameAsc();
     List<ProductsEntity> findAllByOrderByNameDesc();
-    List<ProductsEntity> findByNameContainingIgnoreCase(String keyword);
+    Page<ProductsEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
 }

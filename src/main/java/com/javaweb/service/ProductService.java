@@ -10,11 +10,11 @@ import java.util.List;
 
 
 public interface ProductService {
-    ResponseObject<Page<ProductDTO>> findAllProducts (Pageable pageable);
+    ResponseObject<Page<ProductDTO>> findAllProducts (Double minPrice, Double maxPrice, Integer page, Integer size, String sortBy);
     ResponseObject<ProductDTO> findProductById (Long id);
     ResponseObject<ProductsEntity> updateProduct (UpdateProductRequestDTO productDTO);
     ResponseObject<Void> deleteProduct (Long id);
-    ResponseObject<List<ProductDTO>> findProductByDiscount();
-    ResponseObject<List<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice);
+    ResponseObject<Page<ProductDTO>> findProductByDiscount(Integer page, Integer size);
+    ResponseObject<Page<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice, Integer page, Integer size);
     ResponseObject<List<ProductDTO>> findProductsSortedBy(String sortBy);
 }

@@ -23,12 +23,18 @@ public class ProductController {
     private ProductServiceImpl productService;
 
     @GetMapping("/{categorySlug}")
-    public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByCategorySlug(
+    public ResponseEntity<ResponseObject<Page<ProductDTO>>> findProductsByCategorySlug(
             @PathVariable String categorySlug,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size) {
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "12") Integer size,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy
+    ) {
         Pageable pageable = PageRequest.of(page, size);
-        ResponseObject<Page<ProductDTO>> products = productService.findProductsByCategorySlug(categorySlug, page, size);
+        ResponseObject<Page<ProductDTO>> products = productService.findProductsByCategorySlug(
+                categorySlug, page, size,
+                minPrice, maxPrice, sortBy);
 
         return ResponseEntity.ok(products);
     }
@@ -36,25 +42,41 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<ResponseObject<Page<ProductDTO>>> getAllProduct(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy
     ) {
-        Pageable pageable = PageRequest.of(page, size);
-        ResponseObject<Page<ProductDTO>> products = productService.findAllProducts(pageable);
+        ResponseObject<Page<ProductDTO>> products = productService.findAllProducts(minPrice, maxPrice, page, size, sortBy);
 
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ResponseObject<List<ProductDTO>>> searchProductsByName(
-            @RequestParam String keyword) {
-        ResponseObject<List<ProductDTO>> response = productService.findProductsByName(keyword);
-        return new ResponseEntity<>(response, response.getStatus());
+    public ResponseEntity<ResponseObject<Page<ProductDTO>>> searchProductsByName(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "12") Integer size
+    ) {
+        ResponseObject<Page<ProductDTO>> result;
+
+        if (keyword != null && !keyword.isEmpty()) {
+            result = productService.findProductsByName(keyword, page, size);
+        } else {
+            Pageable pageable = PageRequest.of(page, size);
+            result = productService.findAllProducts(null, null, page, size, null); // fallback nếu không có keyword
+        }
+        return ResponseEntity.ok(result);
     }
 
+
     @GetMapping("/filter/by-discount")
-    public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByDiscount() {
-        ResponseObject<List<ProductDTO>> response = productService.findProductByDiscount();
-        return new ResponseEntity<>(response, response.getStatus());
+    public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByDiscount(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
+        ResponseObject<Page<ProductDTO>> products = productService.findProductByDiscount(page, size);
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/by-id/{id}")
@@ -73,11 +95,12 @@ public class ProductController {
     }
 
     @GetMapping("/filter/price")
-    public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByPriceRange(
+    public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByPriceRange(
             @RequestParam Double minPrice,
             @RequestParam(required = false) Double maxPrice,
-            @RequestParam(required = false) String categorySlug) {
-        ResponseObject<List<ProductDTO>> response = productService.findProductByPriceRange(minPrice, maxPrice);
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        ResponseObject<Page<ProductDTO>> response = productService.findProductByPriceRange(minPrice, maxPrice, page, size);
         return new ResponseEntity<>(response, response.getStatus());
     }
 
@@ -91,7 +114,6 @@ public class ProductController {
 
     @PostMapping("/new-product")
     public ResponseEntity<ResponseObject<ProductsEntity>> createNewProduct(@RequestBody AddProductRequestDTO productDTO) {
-        System.out.println("request: " + productDTO);
         ResponseObject<ProductsEntity> response = productService.createNewProduct(productDTO);
         return new ResponseEntity<>(response, response.getStatus());
     }

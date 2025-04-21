@@ -54,7 +54,6 @@ public class OrderServiceImpl implements OrderService {
             ProductsEntity product = productRepository
                     .findById(itemDTO.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
-
             // Kiểm tra số lượng trong kho
             if (product.getQuantityStock() < itemDTO.getQuantity()) {
                 throw new RuntimeException("Not enough stock for product: " + itemDTO.getProductId() +

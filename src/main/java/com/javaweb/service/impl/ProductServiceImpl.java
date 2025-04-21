@@ -12,6 +12,7 @@ import com.javaweb.repository.ProductRepository;
 import com.javaweb.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,9 +38,14 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private SupplierRespository supplierRepository;
 
-    public ResponseObject<Page<ProductDTO>> findAllProducts(Pageable pageable) {
+    public ResponseObject<Page<ProductDTO>> findAllProducts(Double minPrice,
+                                                            Double maxPrice,
+                                                            Integer page,
+                                                            Integer size,
+                                                            String sortBy) {
         try {
-            Page<ProductsEntity> pageProduct = productRepository.findAll(pageable);
+            Pageable pageable = PageRequest.of(page, size, getSort(sortBy));
+            Page<ProductsEntity> pageProduct = productRepository.findAll(minPrice, maxPrice, pageable);
 
             Page<ProductDTO> pageProductDTO = pageProduct.map(product -> modelMapper.map(product, ProductDTO.class));
 
@@ -52,24 +58,43 @@ public class ProductServiceImpl implements ProductService {
 
     @GetMapping
     public ResponseObject<Page<ProductDTO>> findProductsByCategorySlug(
-            @PathVariable String categorySlug,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size
+            String categorySlug,
+            Integer page,
+            Integer size,
+            Double minPrice,
+            Double maxPrice,
+            String sortBy
     ) {
         try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ProductsEntity> productsPage = productRepository.findByCategorySlug(categorySlug, pageable);
-
+            Pageable pageable = PageRequest.of(page, size, getSort(sortBy));
+            Page<ProductsEntity> productsPage = productRepository.findByCategorySlug(categorySlug, minPrice, maxPrice, pageable);
             if (productsPage.isEmpty()) {
                 return ResponseObject.error("No products found for category: " + categorySlug, HttpStatus.NOT_FOUND);
             }
-
             Page<ProductDTO> productDTO = productsPage.map(product -> modelMapper.map(product, ProductDTO.class));
-
             return ResponseObject.success(productDTO);
+
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseObject.error("Failed to fetch products by category slug", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private Sort getSort(String sortBy) {
+        if (sortBy == null) return Sort.unsorted();
+        switch (sortBy.toLowerCase()) {
+            case "newest":
+                return Sort.by("createdAt").descending();
+            case "price-asc":
+                return Sort.by("price").ascending();
+            case "price-desc":
+                return Sort.by("price").descending();
+            case "name-asc":
+                return Sort.by("name").ascending();
+            case "name-desc":
+                return Sort.by("name").descending();
+            default:
+                return Sort.unsorted();
         }
     }
 
@@ -92,19 +117,23 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<List<ProductDTO>> findProductByDiscount() {
+    public ResponseObject<Page<ProductDTO>> findProductByDiscount(Integer page, Integer size) {
         try {
-            List<ProductsEntity> products = productRepository.findByDiscountGreaterThan(0.0); // Giả sử lấy các sản phẩm có discount > 0
-            if (products.isEmpty()) {
-                return ResponseObject.error("No products with discount found", HttpStatus.NOT_FOUND);
+            Pageable pageable = PageRequest.of(page, size, Sort.by("discount").descending());
+            Page<ProductsEntity> productPage = productRepository.findByDiscountGreaterThan(0.0, pageable);
+
+            if (productPage.isEmpty()) {
+                return ResponseObject.error("No discounted products found", HttpStatus.NOT_FOUND);
             }
-            List<ProductDTO> productDTO = products.stream()
-                    .map(product -> modelMapper.map(product, ProductDTO.class))
-                    .collect(Collectors.toList());
-            return ResponseObject.success(productDTO);
+
+            Page<ProductDTO> productDTOPage = productPage.map(product ->
+                    modelMapper.map(product, ProductDTO.class)
+            );
+
+            return ResponseObject.success(productDTOPage);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseObject.error("Failed to fetch products by discount", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseObject.error("Failed to fetch discounted products", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -207,34 +236,33 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<List<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice) {
+    public ResponseObject<Page<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice, Integer page, Integer size) {
         try {
-            List<ProductsEntity> products;
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductsEntity> productPage;
 
             if (minPrice != null && maxPrice != null) {
                 if (minPrice > maxPrice) {
                     return ResponseObject.error("Invalid price range", HttpStatus.BAD_REQUEST);
                 }
-                products = productRepository.findByPriceBetween(minPrice, maxPrice);
+                productPage = productRepository.findByPriceBetween(minPrice, maxPrice, pageable);
 
             } else if (minPrice != null) {
-                products = productRepository.findByPriceGreaterThanEqual(minPrice);
+                productPage = productRepository.findByPriceGreaterThanEqual(minPrice, pageable);
 
             } else if (maxPrice != null) {
-                products = productRepository.findByPriceLessThanEqual(maxPrice);
+                productPage = productRepository.findByPriceLessThanEqual(maxPrice, pageable);
 
             } else {
                 return ResponseObject.error("Price range must be specified", HttpStatus.BAD_REQUEST);
             }
 
-            if (products.isEmpty()) {
+            if (productPage.isEmpty()) {
                 return ResponseObject.error("No products found in price range", HttpStatus.NOT_FOUND);
             }
 
-            List<ProductDTO> productDTO = products.stream()
-                    .map(product -> modelMapper.map(product, ProductDTO.class))
-                    .collect(Collectors.toList());
-            return ResponseObject.success(productDTO);
+            Page<ProductDTO> dtoPage = productPage.map(product -> modelMapper.map(product, ProductDTO.class));
+            return ResponseObject.success(dtoPage);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -248,16 +276,16 @@ public class ProductServiceImpl implements ProductService {
             switch (sortBy.toLowerCase()) {
                 case "newest":
                     products = productRepository.findAllByOrderByCreatedAtDesc();
-                case "price_asc":
+                case "price-asc":
                     products = productRepository.findAllByOrderByPriceAsc();
                     break;
-                case "price_desc":
+                case "price-desc":
                     products = productRepository.findAllByOrderByPriceDesc();
                     break;
-                case "name_asc":
+                case "name-asc":
                     products = productRepository.findAllByOrderByNameAsc();
                     break;
-                case "name_desc":
+                case "name-desc":
                     products = productRepository.findAllByOrderByNameDesc();
                     break;
                 default:
@@ -351,15 +379,14 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<List<ProductDTO>> findProductsByName(String keyword) {
+    public ResponseObject<Page<ProductDTO>> findProductsByName(String keyword, int page, int size) {
         try {
             // Tìm kiếm sản phẩm trong database, không phân biệt hoa thường
-            List<ProductsEntity> products = productRepository.findByNameContainingIgnoreCase(keyword);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductsEntity> productPage = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
 
             // Chuyển đổi từ ProductsEntity sang ProductDTO
-            List<ProductDTO> productDTO = products.stream()
-                    .map(product -> new ProductDTO(product)) // Giả sử ProductDTO có constructor này
-                    .collect(Collectors.toList());
+            Page<ProductDTO> productDTO = productPage.map(product -> new ProductDTO(product)); // Giả sử ProductDTO có constructor này
 
             return ResponseObject.success(productDTO);
         } catch (NotFoundException e) {
