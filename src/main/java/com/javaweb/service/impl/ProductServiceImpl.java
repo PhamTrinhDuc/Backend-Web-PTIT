@@ -11,10 +11,15 @@ import com.javaweb.repository.CategoryRepository;
 import com.javaweb.repository.ProductRepository;
 import com.javaweb.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -45,17 +50,21 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<List<ProductDTO>> findProductsByCategorySlug(String categorySlug) {
+    @GetMapping
+    public ResponseObject<Page<ProductDTO>> findProductsByCategorySlug(
+            @PathVariable String categorySlug,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size
+    ) {
         try {
-            List<ProductsEntity> products = productRepository.findByCategorySlug(categorySlug);
+            Pageable pageable = PageRequest.of(page, size);
+            Page<ProductsEntity> productsPage = productRepository.findByCategorySlug(categorySlug, pageable);
 
-            if (products.isEmpty()) {
+            if (productsPage.isEmpty()) {
                 return ResponseObject.error("No products found for category: " + categorySlug, HttpStatus.NOT_FOUND);
             }
 
-            List<ProductDTO> productDTO = products.stream()
-                    .map(product -> modelMapper.map(product, ProductDTO.class))
-                    .collect(Collectors.toList());
+            Page<ProductDTO> productDTO = productsPage.map(product -> modelMapper.map(product, ProductDTO.class));
 
             return ResponseObject.success(productDTO);
         } catch (Exception e) {

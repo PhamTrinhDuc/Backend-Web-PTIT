@@ -6,12 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 
 public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
-    List<ProductsEntity> findByCategorySlug(String categorySlug);
+    Page<ProductsEntity> findByCategorySlug(String categorySlug, Pageable pageable);
     boolean existsByName(String name);
-
-    // Thêm các phương thức mới
     List<ProductsEntity> findAllByOrderByCreatedAtDesc();
     List<ProductsEntity> findByDiscountGreaterThan(Double discount);
     List<ProductsEntity> findByPriceBetween(Double minPrice, Double maxPrice);

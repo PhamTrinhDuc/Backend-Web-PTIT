@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
+// backend: MVC -> function + DB; show API: input + output
 
 @Entity
 @Table(name = "supplier")

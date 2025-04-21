@@ -23,8 +23,14 @@ public class ProductController {
     private ProductServiceImpl productService;
 
     @GetMapping("/{categorySlug}")
-    public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByCategorySlug(@PathVariable String categorySlug) {
-        return ResponseEntity.ok(productService.findProductsByCategorySlug(categorySlug));
+    public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByCategorySlug(
+            @PathVariable String categorySlug,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        ResponseObject<Page<ProductDTO>> products = productService.findProductsByCategorySlug(categorySlug, page, size);
+
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping
@@ -45,13 +51,13 @@ public class ProductController {
         return new ResponseEntity<>(response, response.getStatus());
     }
 
-    @GetMapping("/by-discount")
+    @GetMapping("/filter/by-discount")
     public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsByDiscount() {
         ResponseObject<List<ProductDTO>> response = productService.findProductByDiscount();
         return new ResponseEntity<>(response, response.getStatus());
     }
 
-    @GetMapping("/id/{id}")
+    @GetMapping("/by-id/{id}")
     public ResponseEntity<ResponseObject<ProductDTO>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findProductById(id));
     }
@@ -75,7 +81,7 @@ public class ProductController {
         return new ResponseEntity<>(response, response.getStatus());
     }
 
-    @GetMapping("/sort")
+    @GetMapping("/filter/sort")
     public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsSortedBy(
             @RequestParam String sortBy,
             @RequestParam(required = false) String categorySlug){

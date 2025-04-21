@@ -1,7 +1,5 @@
 package com.javaweb.dto;
 
-import jakarta.persistence.Column;
-
 public class SupplierDTO {
     private String supplierName;
     private String contactInfo;
