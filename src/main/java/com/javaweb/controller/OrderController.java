@@ -2,16 +2,19 @@ package com.javaweb.controller;
 
 
 import com.javaweb.dto.OrderDTO;
+import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.OrderEntity;
+import com.javaweb.model.ResponseObject;
 import com.javaweb.service.impl.OrderServiceImpl;
-import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -51,8 +54,12 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllOrders(@RequestParam Long id) {
-        List<OrderDTO> orders = orderService.getAllOrders(id);
+    public ResponseEntity<ResponseObject<Page<OrderDTO>>> getAllOrders(
+            @RequestParam Long id,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "12") Integer size) {
+        Pageable pageable = PageRequest.of(page, size);
+        ResponseObject<Page<OrderDTO>> orders = orderService.getAllOrders(id, pageable);
         return ResponseEntity.ok(orders);
     }
 
@@ -70,4 +77,6 @@ public class OrderController {
                     .body("Error updating order status: " + e.getMessage());
         }
     }
+
+
 }

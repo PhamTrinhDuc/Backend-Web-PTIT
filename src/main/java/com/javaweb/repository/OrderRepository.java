@@ -1,8 +1,11 @@
 package com.javaweb.repository;
 
 import com.javaweb.model.OrderEntity;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.List;
+import org.springframework.data.domain.Pageable;
+
+
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
-    List<OrderEntity> findByUser_Id(Long userId);
+    Page<OrderEntity> findByUser_Id(Long userId, Pageable pageable);
 }

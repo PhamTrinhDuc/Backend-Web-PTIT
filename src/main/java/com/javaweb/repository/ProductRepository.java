@@ -20,15 +20,17 @@ public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
             "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
             "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
     Page<ProductsEntity> findByCategorySlug(String categorySlug, Double minPrice, Double maxPrice, Pageable pageable);
+
     boolean existsByName(String name);
     List<ProductsEntity> findAllByOrderByCreatedAtDesc();
     Page<ProductsEntity> findByDiscountGreaterThan(Double discount, Pageable pageable);
-    Page<ProductsEntity> findByPriceBetween(Double min, Double max, Pageable pageable);
-    Page<ProductsEntity> findByPriceGreaterThanEqual(Double min, Pageable pageable);
-    Page<ProductsEntity> findByPriceLessThanEqual(Double max, Pageable pageable);
-    List<ProductsEntity> findAllByOrderByPriceAsc();
-    List<ProductsEntity> findAllByOrderByPriceDesc();
-    List<ProductsEntity> findAllByOrderByNameAsc();
-    List<ProductsEntity> findAllByOrderByNameDesc();
-    Page<ProductsEntity> findByNameContainingIgnoreCase(String name, Pageable pageable);
+    @Query("SELECT p FROM ProductsEntity p " +
+            "WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice)")
+    Page<ProductsEntity> findByNameContainingIgnoreCase(
+            @Param("keyword") String keyword,
+            @Param("minPrice") Double minPrice,
+            @Param("maxPrice") Double maxPrice,
+            Pageable pageable);
 }

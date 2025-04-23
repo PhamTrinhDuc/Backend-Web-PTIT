@@ -1,11 +1,20 @@
 package com.javaweb.dto;
 
 public class SupplierDTO {
+    private Long Id;
     private String supplierName;
     private String contactInfo;
     private boolean isActive;
 
     SupplierDTO(){}
+
+    public Long getId() {
+        return Id;
+    }
+
+    public void setId(Long id) {
+        this.Id = id;
+    }
 
     public String getSupplierName() {
         return supplierName;

@@ -2,20 +2,21 @@ package com.javaweb.service.impl;
 
 import com.javaweb.dto.OrderDTO;
 import com.javaweb.dto.OrderDetailDTO;
+import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.*;
 import com.javaweb.repository.*;
 import com.javaweb.service.OrderService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -100,18 +101,18 @@ public class OrderServiceImpl implements OrderService {
 
         // 3. Tăng lại số lượng tồn kho cho từng sản phẩm trong đơn hàng
         for (OrderDetailEntity orderDetail : order.getOrderDetails()) {
-            ProductsEntity productVariant = orderDetail.getProducts();
+            ProductsEntity product = orderDetail.getProducts();
 
             // Sử dụng khóa bi quan để tránh race condition
-            ProductsEntity finalProductVariant = productVariant;
+            ProductsEntity finalProductVariant = product;
 
-            productVariant = productRepository
-                    .findById(productVariant.getId())
-                    .orElseThrow(() -> new RuntimeException("Product variant not found: " + finalProductVariant.getId()));
+            product = productRepository
+                    .findById(product.getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + finalProductVariant.getId()));
 
             // Tăng lại số lượng
-            productVariant.setQuantityStock(productVariant.getQuantityStock() + orderDetail.getQuantity());
-            productRepository.save(productVariant);
+            product.setQuantityStock(product.getQuantityStock() + orderDetail.getQuantity());
+            productRepository.save(product);
         }
 
         order.setStatus("CANCELLED");
@@ -119,13 +120,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderDTO> getAllOrders(Long id) {
-        List<OrderEntity> orders = orderRepository.findByUser_Id(id);
+    public ResponseObject<Page<OrderDTO>> getAllOrders(Long id, Pageable pageable) {
+        Page<OrderEntity> orders = orderRepository.findByUser_Id(id, pageable);
 
-        List<OrderDTO> orderDTO =  orders.stream()
-                .map(order -> modelMapper.map(order, OrderDTO.class))
-                .collect(Collectors.toList());
-        return orderDTO;
+        Page<OrderDTO> orderDTO =  orders.map(order -> modelMapper.map(order, OrderDTO.class));
+        return ResponseObject.success(orderDTO);
     }
 
     @Transactional

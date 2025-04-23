@@ -14,16 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Timestamp;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -67,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     ) {
         try {
             Pageable pageable = PageRequest.of(page, size, getSort(sortBy));
+            System.out.println("minPrice: " + minPrice + "maxPrice: " + maxPrice);
             Page<ProductsEntity> productsPage = productRepository.findByCategorySlug(categorySlug, minPrice, maxPrice, pageable);
             if (productsPage.isEmpty()) {
                 return ResponseObject.error("No products found for category: " + categorySlug, HttpStatus.NOT_FOUND);
@@ -236,74 +233,6 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<Page<ProductDTO>> findProductByPriceRange(Double minPrice, Double maxPrice, Integer page, Integer size) {
-        try {
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ProductsEntity> productPage;
-
-            if (minPrice != null && maxPrice != null) {
-                if (minPrice > maxPrice) {
-                    return ResponseObject.error("Invalid price range", HttpStatus.BAD_REQUEST);
-                }
-                productPage = productRepository.findByPriceBetween(minPrice, maxPrice, pageable);
-
-            } else if (minPrice != null) {
-                productPage = productRepository.findByPriceGreaterThanEqual(minPrice, pageable);
-
-            } else if (maxPrice != null) {
-                productPage = productRepository.findByPriceLessThanEqual(maxPrice, pageable);
-
-            } else {
-                return ResponseObject.error("Price range must be specified", HttpStatus.BAD_REQUEST);
-            }
-
-            if (productPage.isEmpty()) {
-                return ResponseObject.error("No products found in price range", HttpStatus.NOT_FOUND);
-            }
-
-            Page<ProductDTO> dtoPage = productPage.map(product -> modelMapper.map(product, ProductDTO.class));
-            return ResponseObject.success(dtoPage);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseObject.error("Failed to fetch products by price range", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public ResponseObject<List<ProductDTO>> findProductsSortedBy(String sortBy) {
-        try {
-            List<ProductsEntity> products;
-            switch (sortBy.toLowerCase()) {
-                case "newest":
-                    products = productRepository.findAllByOrderByCreatedAtDesc();
-                case "price-asc":
-                    products = productRepository.findAllByOrderByPriceAsc();
-                    break;
-                case "price-desc":
-                    products = productRepository.findAllByOrderByPriceDesc();
-                    break;
-                case "name-asc":
-                    products = productRepository.findAllByOrderByNameAsc();
-                    break;
-                case "name-desc":
-                    products = productRepository.findAllByOrderByNameDesc();
-                    break;
-                default:
-                    return ResponseObject.error("Invalid sort criteria", HttpStatus.BAD_REQUEST);
-            }
-            if (products.isEmpty()) {
-                return ResponseObject.error("No products found", HttpStatus.NOT_FOUND);
-            }
-            List<ProductDTO> productDTO = products.stream()
-                    .map(product -> modelMapper.map(product, ProductDTO.class))
-                    .collect(Collectors.toList());
-            return ResponseObject.success(productDTO);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseObject.error("Failed to fetch sorted products", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public ResponseObject<ProductsEntity> createNewProduct(AddProductRequestDTO productDTO) {
         try {
             // Kiểm tra tên sản phẩm
@@ -379,11 +308,11 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    public ResponseObject<Page<ProductDTO>> findProductsByName(String keyword, int page, int size) {
+    public ResponseObject<Page<ProductDTO>> findProductsByName(String keyword, Integer page, Integer size, Double minPrice, Double maxPrice, String sortBy) {
         try {
             // Tìm kiếm sản phẩm trong database, không phân biệt hoa thường
-            Pageable pageable = PageRequest.of(page, size);
-            Page<ProductsEntity> productPage = productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+            Pageable pageable = PageRequest.of(page, size, getSort(sortBy));
+            Page<ProductsEntity> productPage = productRepository.findByNameContainingIgnoreCase(keyword, minPrice, maxPrice, pageable);
 
             // Chuyển đổi từ ProductsEntity sang ProductDTO
             Page<ProductDTO> productDTO = productPage.map(product -> new ProductDTO(product)); // Giả sử ProductDTO có constructor này

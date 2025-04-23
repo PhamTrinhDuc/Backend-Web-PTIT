@@ -56,19 +56,21 @@ public class ProductController {
     public ResponseEntity<ResponseObject<Page<ProductDTO>>> searchProductsByName(
             @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "12") Integer size
+            @RequestParam(defaultValue = "12") Integer size,
+            @RequestParam(required = false) Double minPrice,
+            @RequestParam(required = false) Double maxPrice,
+            @RequestParam(required = false) String sortBy
     ) {
         ResponseObject<Page<ProductDTO>> result;
 
         if (keyword != null && !keyword.isEmpty()) {
-            result = productService.findProductsByName(keyword, page, size);
+            result = productService.findProductsByName(keyword, page, size, minPrice, maxPrice, sortBy);
         } else {
             Pageable pageable = PageRequest.of(page, size);
-            result = productService.findAllProducts(null, null, page, size, null); // fallback nếu không có keyword
+            result = productService.findAllProducts(minPrice, maxPrice, page, size, sortBy); // fallback nếu không có keyword
         }
         return ResponseEntity.ok(result);
     }
-
 
     @GetMapping("/filter/by-discount")
     public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByDiscount(
@@ -94,23 +96,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
 
-    @GetMapping("/filter/price")
-    public ResponseEntity<ResponseObject<Page<ProductDTO>>> getProductsByPriceRange(
-            @RequestParam Double minPrice,
-            @RequestParam(required = false) Double maxPrice,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "12") int size) {
-        ResponseObject<Page<ProductDTO>> response = productService.findProductByPriceRange(minPrice, maxPrice, page, size);
-        return new ResponseEntity<>(response, response.getStatus());
-    }
-
-    @GetMapping("/filter/sort")
-    public ResponseEntity<ResponseObject<List<ProductDTO>>> getProductsSortedBy(
-            @RequestParam String sortBy,
-            @RequestParam(required = false) String categorySlug){
-        ResponseObject<List<ProductDTO>> response = productService.findProductsSortedBy(sortBy);
-        return new ResponseEntity<>(response, response.getStatus());
-    }
 
     @PostMapping("/new-product")
     public ResponseEntity<ResponseObject<ProductsEntity>> createNewProduct(@RequestBody AddProductRequestDTO productDTO) {
