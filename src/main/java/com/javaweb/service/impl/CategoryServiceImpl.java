@@ -15,6 +15,8 @@ import com.javaweb.model.ResponseObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.javaweb.mapper.CategoryMapper;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -62,6 +64,44 @@ public class CategoryServiceImpl implements CategoryService {
         }
     }
 
+    public ResponseObject<CategoryDTO> createCategory(CategoryDTO categoryDTO) {
+        try {
+            String name = categoryDTO.getName();
+            String inputSlug = categoryDTO.getSlug();
+
+            if (name == null || name.trim().isEmpty()) {
+                return ResponseObject.error("Category name is required", HttpStatus.BAD_REQUEST);
+            }
+
+            // Tạo slug nếu admin không nhập
+            String slug = (inputSlug == null || inputSlug.trim().isEmpty())
+                    ? generateSlugFromName(name)
+                    : inputSlug.trim().toLowerCase();
+
+            // Kiểm tra nếu slug đã tồn tại
+            if (categoryRepository.existsBySlug(slug)) {
+                return ResponseObject.error("Category with this slug already exists", HttpStatus.CONFLICT);
+            }
+
+            // Tạo entity mới
+            CategoryEntity categoryEntity = new CategoryEntity();
+            categoryEntity.setName(name);
+            categoryEntity.setSlug(slug);
+            categoryEntity.setIsActive(true);
+
+            // Lưu vào DB
+            CategoryEntity saved = categoryRepository.save(categoryEntity);
+
+            // Map sang DTO
+            CategoryDTO savedDTO = modelMapper.map(saved, CategoryDTO.class);
+            return ResponseObject.success(savedDTO);
+
+        } catch (Exception e) {
+            log.error("Error in createCategory: {}", e.getMessage(), e);
+            return ResponseObject.error("Failed to create category", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @Override
     public ResponseObject<CategoryEntity> saveOrUpdateCategory(CategoryDTO categoryDTO) {
         try {
@@ -90,8 +130,6 @@ public class CategoryServiceImpl implements CategoryService {
             categoryEntity.setName(name);
             categoryEntity.setSlug(slug);
             categoryEntity.setIsActive(true);
-            // Map thêm fields khác nếu cần
-
             categoryRepository.save(categoryEntity);
             return ResponseObject.success(categoryEntity);
 
@@ -108,7 +146,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .replaceAll("\\s+", "-");       // Thay khoảng trắng bằng dấu -
     }
 
-
     public ResponseObject<Void> deleteCategory(Long id) {
         if (id == null) {
             return ResponseObject.error("ID must not be null", HttpStatus.BAD_REQUEST);
@@ -119,4 +156,5 @@ public class CategoryServiceImpl implements CategoryService {
         categoryRepository.deleteById(id);
         return ResponseObject.success(null);
     }
+
 }

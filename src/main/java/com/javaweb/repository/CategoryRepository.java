@@ -10,6 +10,7 @@ import java.util.Optional;
 public interface CategoryRepository extends JpaRepository<CategoryEntity, Long> {
     boolean existsByName(String name);
     boolean existsById(Long id);
+    boolean existsBySlug(String slug);
     Optional<CategoryEntity> findBySlug(String slug);
     Optional<CategoryEntity> findByName(String name);
 }

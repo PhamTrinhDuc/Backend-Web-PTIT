@@ -34,9 +34,8 @@ public class UserServiceImpl implements UserDetailsService {
     }
 
     public List<UserEntity> getAllUsers() {
-        return userRepository.findAll();
+        return userRepository.findAllActiveUsers();
     }
-
     public UserEntity registerUser(RegisterRequestDTO request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -82,8 +81,8 @@ public class UserServiceImpl implements UserDetailsService {
         return userRepository.save(user);
     }
 
-    public void deleteUser(String username) {
-        UserEntity user = userRepository.findByUsername(username)
+    public void deleteUser(Long id) {
+        UserEntity user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         user.setStatus("inactive");
         user.setUpdatedAt(LocalDateTime.now());

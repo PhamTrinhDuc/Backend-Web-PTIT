@@ -44,7 +44,10 @@ public class SupplierController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseObject<SupplierDTO>> updateSupplier(@RequestBody SupplierDTO supplierDTO) {
+    public ResponseEntity<ResponseObject<SupplierDTO>> updateSupplier(@PathVariable Long id,
+                                                                      @RequestBody SupplierDTO supplierDTO) {
+        supplierDTO.setId(id);
+        supplierDTO.setActive(true);
         ResponseObject<SupplierDTO> updatedSupplier = supplierService.updateSupplier(supplierDTO);
         return ResponseEntity.ok(updatedSupplier);
     }

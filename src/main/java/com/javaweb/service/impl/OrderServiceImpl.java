@@ -2,7 +2,6 @@ package com.javaweb.service.impl;
 
 import com.javaweb.dto.OrderDTO;
 import com.javaweb.dto.OrderDetailDTO;
-import com.javaweb.dto.ProductDTO;
 import com.javaweb.model.*;
 import com.javaweb.repository.*;
 import com.javaweb.service.OrderService;
@@ -89,13 +88,14 @@ public class OrderServiceImpl implements OrderService {
 
     // Thêm phương thức cancelOrder
     @Transactional
-    public OrderEntity cancelOrder(Long orderId) {
+    public OrderDTO cancelOrder(Long orderId) {
         // 1. Lấy thông tin đơn hàng
         OrderEntity order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
         // 2. Kiểm tra trạng thái đơn hàng
-        if (order.getStatus().equals("SHIPPED") || order.getStatus().equals("DELIVERED") ) { // đơn đang được giao mới được hủy
+        if (order.getStatus().equals("SHIPPED") || order.getStatus().equals("DELIVERED")) {
+            // Nếu đơn hàng đang giao hoặc đã giao, không thể hủy
             throw new RuntimeException("Cannot cancel order with status: " + order.getStatus());
         }
 
@@ -103,20 +103,28 @@ public class OrderServiceImpl implements OrderService {
         for (OrderDetailEntity orderDetail : order.getOrderDetails()) {
             ProductsEntity product = orderDetail.getProducts();
 
-            // Sử dụng khóa bi quan để tránh race condition
-            ProductsEntity finalProductVariant = product;
+            ProductsEntity productCp = product;
 
-            product = productRepository
-                    .findById(product.getId())
-                    .orElseThrow(() -> new RuntimeException("Product not found: " + finalProductVariant.getId()));
+            // Lấy lại sản phẩm với khóa bi quan để tránh race condition
+            product = productRepository.findById(product.getId())
+                    .orElseThrow(() -> new RuntimeException("Product not found: " + productCp.getId()));
 
-            // Tăng lại số lượng
+            // Tăng lại số lượng tồn kho của sản phẩm
             product.setQuantityStock(product.getQuantityStock() + orderDetail.getQuantity());
             productRepository.save(product);
         }
 
+        // Cập nhật trạng thái đơn hàng thành "CANCELLED"
         order.setStatus("CANCELLED");
-        return orderRepository.save(order);
+
+        // Lưu lại đơn hàng đã hủy
+        OrderEntity cancelledOrder = orderRepository.save(order);
+
+        // Chuyển đổi OrderEntity thành OrderDTO sử dụng modelMapper
+        OrderDTO cancelledOrderDTO = modelMapper.map(cancelledOrder, OrderDTO.class);
+
+        // Trả về ResponseObject với dữ liệu OrderDTO
+        return cancelledOrderDTO;
     }
 
     @Override

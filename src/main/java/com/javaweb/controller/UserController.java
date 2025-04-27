@@ -48,11 +48,10 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/me")
-    public ResponseEntity<?> deleteAccount(Authentication authentication) {
+    @DeleteMapping("/me/{id}")
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id, Authentication authentication) {
         try {
-            String username = authentication.getName();
-            userService.deleteUser(username);
+            userService.deleteUser(id);
             return ResponseEntity.ok("Account deleted successfully");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

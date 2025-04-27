@@ -44,12 +44,16 @@ public class OrderController {
     }
 
     @PutMapping("/cancel/{id}")
-    public ResponseEntity<?> cancelOrder(@PathVariable Long id) {
+    public ResponseEntity<ResponseObject<OrderDTO>> cancelOrder(@PathVariable Long id) {
         try {
-            OrderEntity cancelledOrder = orderService.cancelOrder(id);
-            return ResponseEntity.ok(cancelledOrder);
+            // Gọi service để hủy đơn hàng
+            OrderDTO cancelledOrder = orderService.cancelOrder(id);
+
+            // Trả về ResponseObject chứa OrderDTO đã hủy
+            return ResponseEntity.ok(ResponseObject.success(cancelledOrder));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            // Nếu có lỗi trong quá trình hủy, trả về thông báo lỗi
+            return ResponseEntity.badRequest().body(ResponseObject.error(e.getMessage(), HttpStatus.BAD_REQUEST));
         }
     }
 
@@ -77,6 +81,4 @@ public class OrderController {
                     .body("Error updating order status: " + e.getMessage());
         }
     }
-
-
 }

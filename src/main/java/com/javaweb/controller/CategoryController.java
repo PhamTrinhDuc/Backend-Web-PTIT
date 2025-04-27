@@ -4,6 +4,7 @@ import com.javaweb.model.ResponseObject;
 import com.javaweb.dto.CategoryDTO;
 import com.javaweb.model.CategoryEntity;
 import com.javaweb.service.impl.CategoryServiceImpl;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +28,17 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.findCategoryBySlug(slug));
     }
 
-    @PostMapping
-    public ResponseEntity<ResponseObject<CategoryEntity>> saveOrUpdateCategory(@RequestBody CategoryDTO categoryDTO) {
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseObject<CategoryEntity>> saveOrUpdateCategory(@PathVariable Long id,
+                                                                               @RequestBody CategoryDTO categoryDTO) {
+        categoryDTO.setId(id);
         return ResponseEntity.ok(categoryService.saveOrUpdateCategory(categoryDTO));
+    }
+
+    @PostMapping
+    public ResponseEntity<ResponseObject<CategoryDTO>> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        ResponseObject<CategoryDTO> response = categoryService.createCategory(categoryDTO);
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
