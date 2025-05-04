@@ -11,6 +11,6 @@ import java.util.List;
 
 public interface OrderService {
     OrderEntity createOrder(OrderDTO orderDTO);
-    ResponseObject<Page<OrderDTO>> getAllOrders(Long id, Pageable pageable);
+    ResponseObject<Page<OrderDTO>> getAllOrders(Pageable pageable);
     OrderDTO updateOrder(Long id, String status);
 }

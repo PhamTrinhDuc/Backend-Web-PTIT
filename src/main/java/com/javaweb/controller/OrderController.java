@@ -59,11 +59,10 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<ResponseObject<Page<OrderDTO>>> getAllOrders(
-            @RequestParam Long id,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "12") Integer size) {
         Pageable pageable = PageRequest.of(page, size);
-        ResponseObject<Page<OrderDTO>> orders = orderService.getAllOrders(id, pageable);
+        ResponseObject<Page<OrderDTO>> orders = orderService.getAllOrders(pageable);
         return ResponseEntity.ok(orders);
     }
 

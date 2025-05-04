@@ -86,7 +86,6 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(savedOrder);
     }
 
-    // Thêm phương thức cancelOrder
     @Transactional
     public OrderDTO cancelOrder(Long orderId) {
         // 1. Lấy thông tin đơn hàng
@@ -128,8 +127,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public ResponseObject<Page<OrderDTO>> getAllOrders(Long id, Pageable pageable) {
-        Page<OrderEntity> orders = orderRepository.findByUser_Id(id, pageable);
+    public ResponseObject<Page<OrderDTO>> getAllOrders(Pageable pageable) {
+        Page<OrderEntity> orders = orderRepository.findAll(pageable);
 
         Page<OrderDTO> orderDTO =  orders.map(order -> modelMapper.map(order, OrderDTO.class));
         return ResponseObject.success(orderDTO);
