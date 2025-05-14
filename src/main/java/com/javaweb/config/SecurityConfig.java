@@ -55,7 +55,7 @@ public class SecurityConfig {
                                 "/api/auth/**",
                                 "/api/products/**",
                                 "/api/category/**",
-                                "/api/orders/**",
+//                                "/api/orders/**",
                                 "/api/upload/**",
                                 "/api/suppliers/**",
                                 "/uploads/**",
@@ -64,7 +64,9 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/swagger-resources/**"
                         ).permitAll()
-                        .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers(
+                                "/api/users/**",
+                                "/api/orders/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, userDetailsService),

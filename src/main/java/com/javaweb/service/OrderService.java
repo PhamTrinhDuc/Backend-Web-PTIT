@@ -13,4 +13,5 @@ public interface OrderService {
     OrderEntity createOrder(OrderDTO orderDTO);
     ResponseObject<Page<OrderDTO>> getAllOrders(Pageable pageable);
     OrderDTO updateOrder(Long id, String status);
+    ResponseObject<Page<OrderDTO>> getAllOrdersByUserId(Pageable pageable, Long userId);
 }

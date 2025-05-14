@@ -96,7 +96,6 @@ public class ProductController {
         return ResponseEntity.ok(productService.deleteProduct(id));
     }
 
-
     @PostMapping("/new-product")
     public ResponseEntity<ResponseObject<ProductsEntity>> createNewProduct(@RequestBody AddProductRequestDTO productDTO) {
         ResponseObject<ProductsEntity> response = productService.createNewProduct(productDTO);

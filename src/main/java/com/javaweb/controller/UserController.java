@@ -1,6 +1,7 @@
 package com.javaweb.controller;
 
 import com.javaweb.dto.ChangePasswordRequest;
+import com.javaweb.dto.RegisterRequestDTO;
 import com.javaweb.dto.UpdateUserRequestDTO;
 import com.javaweb.dto.UserDTO;
 import com.javaweb.model.UserEntity;
@@ -49,7 +50,7 @@ public class UserController {
     }
 
     @DeleteMapping("/me/{id}")
-    public ResponseEntity<?> deleteAccount(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<?> deleteAccount(@PathVariable Long id) {
         try {
             userService.deleteUser(id);
             return ResponseEntity.ok("Account deleted successfully");

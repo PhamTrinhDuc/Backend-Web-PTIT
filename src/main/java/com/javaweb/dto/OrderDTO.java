@@ -9,6 +9,7 @@ import java.util.List;
 public class OrderDTO {
     private Long id;
     private Long userId;
+    private String userName;
     private List<OrderDetailDTO> items;
     private String paymentMethod;
     private String status;
@@ -31,6 +32,14 @@ public class OrderDTO {
 
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public List<OrderDetailDTO> getItems() {

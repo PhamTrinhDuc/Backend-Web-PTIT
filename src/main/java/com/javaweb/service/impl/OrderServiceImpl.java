@@ -9,9 +9,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -144,5 +144,22 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(status); // Cập nhật status mới
         orderRepository.save(order); // Lưu lại thay đổi
         return modelMapper.map(order, OrderDTO.class); // Convert sang DTO nếu cần trả về
+    }
+
+    @Override
+    public ResponseObject<Page<OrderDTO>> getAllOrdersByUserId(Pageable pageable, Long userId) {
+        // Kiểm tra userId hợp lệ
+        if (userId == null || userId <= 0) {
+            return ResponseObject.error("Invalid user ID", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        // Truy vấn đơn hàng theo userId
+        Page<OrderEntity> orders = orderRepository.findByUser_Id(pageable, userId);
+
+        // Chuyển đổi Page<OrderEntity> sang Page<OrderDTO>
+        Page<OrderDTO> orderDTOs = orders.map(order -> modelMapper.map(order, OrderDTO.class));
+
+        // Trả về kết quả
+        return ResponseObject.success(orderDTOs);
     }
 }

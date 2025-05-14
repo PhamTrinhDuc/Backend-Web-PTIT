@@ -80,4 +80,14 @@ public class OrderController {
                     .body("Error updating order status: " + e.getMessage());
         }
     }
+
+    @GetMapping("/by-id/{user_id}")
+    public ResponseEntity<ResponseObject<Page<OrderDTO>>> getAllOrdersByUserId(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "12") Integer size,
+            @PathVariable Long user_id) {
+        Pageable pageable = PageRequest.of(page, size);
+        ResponseObject<Page<OrderDTO>> orders = orderService.getAllOrdersByUserId(pageable, user_id);
+        return ResponseEntity.ok(orders);
+    }
 }
