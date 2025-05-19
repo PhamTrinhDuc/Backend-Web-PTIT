@@ -338,4 +338,46 @@ public class ProductServiceImpl implements ProductService {
         productRepository.deleteById(id);
         return ResponseObject.success(null);
     }
+
+    public ResponseObject<List<ProductDTO>> findTopSellingProducts() {
+        try {
+            Pageable pageable = PageRequest.of(0, 5);
+            List<Object[]> topProductsWithQuantity = productRepository.findTop5ProductsWithSoldQuantity(pageable);
+
+            topProductsWithQuantity.forEach(result -> {
+                ProductsEntity product = (ProductsEntity) result[0];
+                Long soldQuantity = (Long) result[1];
+            });
+
+            if (topProductsWithQuantity.isEmpty()) {
+                return ResponseObject.error("No products with sales found", HttpStatus.NOT_FOUND);
+            }
+
+            List<ProductDTO> productDTOs = topProductsWithQuantity.stream()
+                    .map(result -> {
+                        ProductsEntity product = (ProductsEntity) result[0];
+                        Long soldQuantity = (Long) result[1];
+                        ProductDTO dto = new ProductDTO();
+                        dto.setId(product.getId());
+                        dto.setName(product.getName());
+                        dto.setPrice(product.getPrice());
+                        dto.setSpecification(product.getSpecification());
+                        dto.setDiscount(product.getDiscount());
+                        dto.setDescription(product.getDescription());
+                        dto.setQuantityStock(product.getQuantityStock());
+                        dto.setCategoryId(product.getCategory() != null ? product.getCategory().getId() : null);
+                        dto.setSupplierId(product.getSupplier() != null ? product.getSupplier().getId() : null);
+                        dto.setImagePaths(product.getProductImageEntities().stream()
+                                .map(ProductImageEntity::getImagePath)
+                                .collect(Collectors.toList()));
+                        dto.setSoldQuantity(soldQuantity.intValue());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseObject.success(productDTOs);
+        } catch (Exception e) {
+            return ResponseObject.error("Failed to fetch top selling products: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

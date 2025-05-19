@@ -1,9 +1,6 @@
 package com.javaweb.controller;
 
-import com.javaweb.dto.ChangePasswordRequest;
-import com.javaweb.dto.RegisterRequestDTO;
-import com.javaweb.dto.UpdateUserRequestDTO;
-import com.javaweb.dto.UserDTO;
+import com.javaweb.dto.*;
 import com.javaweb.model.UserEntity;
 import com.javaweb.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,5 +64,23 @@ public class UserController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/top-spending")
+    public ResponseEntity<List<TopSpendingUserDTO>> getTop5SpendingUsers() {
+        List<UserSpendingDTO> topSpendingUsers = userService.getTop5SpendingUsers();
+
+        // Chuyển đổi sang DTO để trả về client
+        List<TopSpendingUserDTO> response = topSpendingUsers.stream()
+                .map(dto -> new TopSpendingUserDTO(
+                        dto.getUser().getId(),
+                        dto.getUser().getUsername(),
+                        dto.getUser().getFullname(),
+                        dto.getUser().getEmail(),
+                        dto.getTotalSpending()
+                ))
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 }

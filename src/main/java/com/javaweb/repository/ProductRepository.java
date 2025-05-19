@@ -33,4 +33,11 @@ public interface ProductRepository extends JpaRepository<ProductsEntity, Long> {
             @Param("minPrice") Double minPrice,
             @Param("maxPrice") Double maxPrice,
             Pageable pageable);
+    @Query("SELECT p, SUM(od.quantity) as soldQuantity " +
+            "FROM ProductsEntity p " +
+            "INNER JOIN OrderDetailEntity od ON p.id = od.products.id " +
+            "GROUP BY p " +
+            "HAVING SUM(od.quantity) > 0 " +
+            "ORDER BY soldQuantity DESC")
+    List<Object[]> findTop5ProductsWithSoldQuantity(org.springframework.data.domain.Pageable pageable);
 }

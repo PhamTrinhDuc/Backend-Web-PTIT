@@ -93,7 +93,7 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
         // 2. Kiểm tra trạng thái đơn hàng
-        if (order.getStatus().equals("SHIPPED") || order.getStatus().equals("DELIVERED")) {
+        if (order.getStatus().equals("SHIPPED") || order.getStatus().equals("DELIVERED") || order.getStatus().equals("CANCELLED")) {
             // Nếu đơn hàng đang giao hoặc đã giao, không thể hủy
             throw new RuntimeException("Cannot cancel order with status: " + order.getStatus());
         }

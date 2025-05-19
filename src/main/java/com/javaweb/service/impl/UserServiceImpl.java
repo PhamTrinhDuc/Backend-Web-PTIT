@@ -3,7 +3,10 @@ package com.javaweb.service.impl;
 import com.javaweb.dto.ChangePasswordRequest;
 import com.javaweb.dto.RegisterRequestDTO;
 import com.javaweb.dto.UpdateUserRequestDTO;
+import com.javaweb.dto.UserSpendingDTO;
+import com.javaweb.model.OrderEntity;
 import com.javaweb.model.UserEntity;
+import com.javaweb.repository.OrderRepository;
 import com.javaweb.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -17,11 +20,14 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserServiceImpl implements UserDetailsService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private OrderRepository orderRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -36,6 +42,7 @@ public class UserServiceImpl implements UserDetailsService {
     public List<UserEntity> getAllUsers() {
         return userRepository.findAllActiveUsers();
     }
+
     public UserEntity registerUser(RegisterRequestDTO request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -109,5 +116,30 @@ public class UserServiceImpl implements UserDetailsService {
         // Cập nhật mật khẩu
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    public List<UserSpendingDTO> getTop5SpendingUsers() {
+        // Lấy tất cả người dùng active
+        List<UserEntity> activeUsers = userRepository.findAllActiveUsers();
+
+        // Tính tổng chi tiêu cho mỗi người dùng
+        List<UserSpendingDTO> userSpendings = activeUsers.stream().map(user -> {
+            // Lấy tất cả đơn hàng của người dùng không bị hủy
+            List<OrderEntity> userOrders = orderRepository.findByUserIdAndStatusNot(user.getId(), "CANCELLED");
+            System.out.println("order: " + userOrders);
+
+            // Tính tổng chi tiêu
+            double totalSpending = userOrders.stream()
+                    .mapToDouble(OrderEntity::getTotalAmount)
+                    .sum();
+
+            return new UserSpendingDTO(user, totalSpending);
+        })
+        // Sắp xếp theo tổng chi tiêu giảm dần
+        .sorted((a, b) -> Double.compare(b.getTotalSpending(), a.getTotalSpending()))
+        // Lấy top 5
+        .limit(5)
+        .collect(Collectors.toList());
+        return userSpendings;
     }
 }

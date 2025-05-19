@@ -81,6 +81,12 @@ public class ProductController {
         return ResponseEntity.ok(products);
     }
 
+    @GetMapping("/top-selling-products")
+    public ResponseEntity<ResponseObject<List<ProductDTO>>> getTopSellingProducts() {
+        ResponseObject<List<ProductDTO>> response = productService.findTopSellingProducts();
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("/by-id/{id}")
     public ResponseEntity<ResponseObject<ProductDTO>> getProductById(@PathVariable Long id) {
         return ResponseEntity.ok(productService.findProductById(id));

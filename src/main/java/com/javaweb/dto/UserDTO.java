@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 public class UserDTO {
 
-    private Integer id;
+    private Long id;
     private String username;
     private String role;
     private String email;
@@ -39,11 +39,11 @@ public class UserDTO {
     }
 
     // Getters and Setters
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
