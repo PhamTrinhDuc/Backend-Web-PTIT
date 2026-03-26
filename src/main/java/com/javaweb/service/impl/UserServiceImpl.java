@@ -70,6 +70,39 @@ public class UserServiceImpl implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    public UserEntity processGoogleLogin(String email, String name, String picture) {
+        Optional<UserEntity> userOpt = userRepository.findByEmail(email);
+        if (userOpt.isPresent()) {
+            return userOpt.get(); // Trả về user nếu đã tồn tại
+        }
+        
+        // Tạo tài khoản mới từ Google Info
+        UserEntity user = new UserEntity();
+
+        // Safe truncation to avoid VARCHAR(255) database errors
+        String baseName = email != null && email.contains("@") ? email.split("@")[0] : "google_user";
+        if (baseName.length() > 50) baseName = baseName.substring(0, 50);
+        String generatedUsername = baseName + "_gss" + System.currentTimeMillis();
+        
+        user.setUsername(generatedUsername.length() > 255 ? generatedUsername.substring(0, 255) : generatedUsername);
+        user.setPassword(passwordEncoder.encode("G_SSO_DUMMY_" + System.currentTimeMillis())); 
+        user.setEmail(email != null && email.length() > 255 ? email.substring(0, 255) : email);
+        user.setRole("user");
+        user.setFullname(name != null && name.length() > 255 ? name.substring(0, 255) : name);
+        
+        // Google picture URLs can sometimes exceed 255 chars. If truncated, URL breaks. Better to set null.
+        if (picture != null && picture.length() > 255) {
+            user.setAvatar(null);
+        } else {
+            user.setAvatar(picture);
+        }
+
+        user.setStatus("active");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
+        return userRepository.save(user);
+    }
+
     public Optional<UserEntity> findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
