@@ -24,6 +24,15 @@ public class OrderEntity {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "shipping_address")
+    private String shippingAddress;
+
+    @Column(name = "contact_phone")
+    private String contactPhone;
+
+    @Column(name = "contact_name")
+    private String contactName;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<OrderDetailEntity> orderDetails;
 
@@ -85,5 +94,29 @@ public class OrderEntity {
 
     public void setOrderDetails(List<OrderDetailEntity> orderDetails) {
         this.orderDetails = orderDetails;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
     }
 }

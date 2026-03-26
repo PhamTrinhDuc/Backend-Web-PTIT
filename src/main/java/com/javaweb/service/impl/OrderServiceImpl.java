@@ -45,6 +45,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus("PENDING");
         order.setTotalAmount(0.0);
         order.setPaymentMethod(orderDTO.getPaymentMethod()); // Thêm payment method từ DTO
+        order.setShippingAddress(orderDTO.getShippingAddress());
+        order.setContactPhone(orderDTO.getContactPhone());
+        order.setContactName(orderDTO.getContactName());
 
         // 3. Kiểm tra và cập nhật số lượng tồn kho
         List<OrderDetailEntity> orderDetails = new ArrayList<>();

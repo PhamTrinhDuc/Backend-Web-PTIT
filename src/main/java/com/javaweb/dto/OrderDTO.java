@@ -14,6 +14,10 @@ public class OrderDTO {
     private String paymentMethod;
     private String status;
     private LocalDateTime orderDate;
+    
+    private String shippingAddress;
+    private String contactPhone;
+    private String contactName;
 
 
     // Getters and Setters
@@ -72,5 +76,29 @@ public class OrderDTO {
 
     public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
+    }
+
+    public String getShippingAddress() {
+        return shippingAddress;
+    }
+
+    public void setShippingAddress(String shippingAddress) {
+        this.shippingAddress = shippingAddress;
+    }
+
+    public String getContactPhone() {
+        return contactPhone;
+    }
+
+    public void setContactPhone(String contactPhone) {
+        this.contactPhone = contactPhone;
+    }
+
+    public String getContactName() {
+        return contactName;
+    }
+
+    public void setContactName(String contactName) {
+        this.contactName = contactName;
     }
 }
