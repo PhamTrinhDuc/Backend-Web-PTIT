@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserDetailsService {
         if (request.getBirthday() != null) user.setBirthday(request.getBirthday());
         if (request.getEmail() != null)  user.setEmail(request.getEmail());
         if (request.getAddress() != null) user.setAddress(request.getAddress());
+        if (request.getAvatar() != null) user.setAvatar(request.getAvatar());
         user.setUpdatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }

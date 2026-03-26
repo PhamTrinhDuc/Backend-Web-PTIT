@@ -10,6 +10,7 @@ public class UpdateUserRequestDTO {
     private String phoneNumber;
     private String gender;
     private String address;
+    private String avatar;
 
     // Getters and setters
     public String getFullName() {
@@ -34,4 +35,6 @@ public class UpdateUserRequestDTO {
     public void setEmail(String email) {this.email = email;}
     public String getPhoneNumber() {return phoneNumber;}
     public void setPhoneNumber(String phoneNumber) {this.phoneNumber = phoneNumber;}
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
 }
