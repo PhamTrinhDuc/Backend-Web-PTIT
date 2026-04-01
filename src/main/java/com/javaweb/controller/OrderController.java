@@ -28,10 +28,10 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderDTO orderRequestDTO) {
         try {
-            orderService.createOrder(orderRequestDTO);
+            OrderDTO order = orderService.createOrder(orderRequestDTO);
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(Collections.singletonMap("message", "Order created successfully"));
+                    .body(order);
         } catch (RuntimeException e) {
             return ResponseEntity
                     .badRequest()
@@ -43,6 +43,7 @@ public class OrderController {
                     .body(Collections.singletonMap("error", "Unexpected error: " + e.getMessage()));
         }
     }
+
 
     @PutMapping("/cancel/{id}")
     public ResponseEntity<ResponseObject<OrderDTO>> cancelOrder(@PathVariable Long id) {

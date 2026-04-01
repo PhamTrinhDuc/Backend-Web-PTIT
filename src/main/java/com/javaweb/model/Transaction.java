@@ -21,6 +21,8 @@ public class Transaction {
 
     private String description;
 
+    private Long orderCode;
+
     private LocalDateTime createdAt;
 
     // Getters and Setters
@@ -30,6 +32,14 @@ public class Transaction {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOrderCode() {
+        return orderCode;
+    }
+
+    public void setOrderCode(Long orderCode) {
+        this.orderCode = orderCode;
     }
 
     public String getPaymentId() {

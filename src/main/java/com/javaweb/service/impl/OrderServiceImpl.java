@@ -33,7 +33,8 @@ public class OrderServiceImpl implements OrderService {
 
     // tạo đơn hàng mới
     @Transactional
-    public OrderEntity createOrder(OrderDTO orderDTO) {
+    public OrderDTO createOrder(OrderDTO orderDTO) {
+        // ... (Giữ nguyên logic tạo đơn hàng ở trên)
         // 1. Lấy thông tin người dùng
         UserEntity user = userRepository.findById(orderDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found: " + orderDTO.getUserId()));
@@ -44,12 +45,11 @@ public class OrderServiceImpl implements OrderService {
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
         order.setTotalAmount(0.0);
-        order.setPaymentMethod(orderDTO.getPaymentMethod()); // Thêm payment method từ DTO
+        order.setPaymentMethod(orderDTO.getPaymentMethod()); 
         order.setShippingAddress(orderDTO.getShippingAddress());
         order.setContactPhone(orderDTO.getContactPhone());
         order.setContactName(orderDTO.getContactName());
 
-        // 3. Kiểm tra và cập nhật số lượng tồn kho
         List<OrderDetailEntity> orderDetails = new ArrayList<>();
         double totalAmount = 0.0;
 
@@ -57,36 +57,31 @@ public class OrderServiceImpl implements OrderService {
             ProductsEntity product = productRepository
                     .findById(itemDTO.getProductId())
                     .orElseThrow(() -> new RuntimeException("Product not found: " + itemDTO.getProductId()));
-            // Kiểm tra số lượng trong kho
+            
             if (product.getQuantityStock() < itemDTO.getQuantity()) {
-                throw new RuntimeException("Not enough stock for product: " + itemDTO.getProductId() +
-                        ". Available: " + product.getQuantityStock() + ", Requested: " + itemDTO.getQuantity());
+                throw new RuntimeException("Not enough stock for product: " + itemDTO.getProductId());
             }
 
-            // Giảm số lượng trong kho
             product.setQuantityStock(product.getQuantityStock() - itemDTO.getQuantity());
-            productRepository.save(product); // Lưu lại sản phẩm đã thay đổi số lượng
+            productRepository.save(product);
 
-            // Tạo chi tiết đơn hàng
             OrderDetailEntity orderDetail = new OrderDetailEntity();
             orderDetail.setOrder(order);
-            orderDetail.setProducts(product); // Gán ProductsEntity vào orderDetail
+            orderDetail.setProducts(product);
             orderDetail.setQuantity(itemDTO.getQuantity());
             orderDetail.setUnitPrice(product.getPrice());
-            orderDetail.setDiscount(itemDTO.getDiscount()); // Thêm discount từ DTO nếu có
+            orderDetail.setDiscount(itemDTO.getDiscount());
             orderDetails.add(orderDetail);
 
-            // Cộng dồn tổng số tiền
-            totalAmount += (product.getPrice() * itemDTO.getQuantity()) * (1 - itemDTO.getDiscount() / 100); // Tính discount nếu có
+            totalAmount += (product.getPrice() * itemDTO.getQuantity()) * (1 - itemDTO.getDiscount() / 100);
         }
-        // 4. Cập nhật tổng số tiền cho đơn hàng
         order.setTotalAmount(totalAmount);
-        // 5. Gán danh sách chi tiết đơn hàng vào đơn hàng
         order.setOrderDetails(orderDetails);
-        // 6. Lưu đơn hàng
+        
         OrderEntity savedOrder = orderRepository.save(order);
-        // 7. Cập nhật trạng thái đơn hàng
-        return orderRepository.save(savedOrder);
+        
+        // Trả về DTO thay vì Entity để tránh lỗi Jackson Serialization
+        return modelMapper.map(savedOrder, OrderDTO.class);
     }
 
     @Transactional
