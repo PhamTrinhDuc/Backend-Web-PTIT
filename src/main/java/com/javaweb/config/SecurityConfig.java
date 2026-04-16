@@ -60,6 +60,8 @@ public class SecurityConfig {
                                 "/api/upload/**",
                                 "/api/suppliers/**",
                                 "/api/reviews/product/**",
+                                "/api/flashsales/**",
+                                "/api/banners/**",
                                 "/uploads/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",

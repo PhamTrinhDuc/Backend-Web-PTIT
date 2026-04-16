@@ -48,6 +48,10 @@ public class UserServiceImpl implements UserDetailsService {
             throw new RuntimeException("Username already exists");
         }
 
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new RuntimeException("Email already exists");
+        }
+
         // Kiểm tra password match
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             throw new RuntimeException("Mật khẩu không khớp!");
@@ -56,7 +60,7 @@ public class UserServiceImpl implements UserDetailsService {
         UserEntity user = new UserEntity();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setEmail("");
+        user.setEmail(request.getEmail());
         user.setRole("user");
         user.setFullname(null);
         user.setAvatar(null);

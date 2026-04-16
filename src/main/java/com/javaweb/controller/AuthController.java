@@ -63,6 +63,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequest) {
+        System.out.println("Register request: " + registerRequest);
         try {
             UserEntity user = userService.registerUser(registerRequest);
             UserDTO userDTO = new UserDTO(user); // This should now work
